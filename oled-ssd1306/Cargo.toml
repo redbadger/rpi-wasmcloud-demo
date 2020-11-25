@@ -1,0 +1,17 @@
+[package]
+authors = ["pi"]
+edition = "2018"
+name = "oled-ssd1306"
+version = "0.1.0"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# Enable if the provider will be statically compiled into a host
+static_plugin = []
+
+[dependencies]
+env_logger = "0.8.2"
+log = "0.4.11"
+wascc-codec = "0.8.1"

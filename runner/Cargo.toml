@@ -1,0 +1,9 @@
+[package]
+authors = ["pi"]
+edition = "2018"
+name = "runner"
+version = "0.1.0"
+
+[dependencies]
+env_logger = "0.8.2"
+wascc-host = {version = "0.14.0", features = ["lattice"]}
