@@ -4,6 +4,7 @@ extern crate wascc_codec as codec;
 #[macro_use]
 extern crate log;
 
+use anyhow::{anyhow, Result};
 use codec::{
     capabilities::{
         CapabilityDescriptor, CapabilityProvider, Dispatcher, NullDispatcher, OperationDirection,
@@ -12,6 +13,14 @@ use codec::{
     core::{CapabilityConfiguration, OP_BIND_ACTOR, OP_REMOVE_ACTOR},
     deserialize, serialize,
 };
+use embedded_graphics::{
+    fonts::{Font6x8, Text},
+    pixelcolor::BinaryColor,
+    prelude::*,
+    style::TextStyleBuilder,
+};
+use linux_embedded_hal::I2cdev;
+use ssd1306::{prelude::*, Builder, I2CDIBuilder};
 use std::{error::Error, sync::RwLock};
 
 const SYSTEM_ACTOR: &str = "system";
@@ -85,8 +94,8 @@ impl OledSsd1306Provider {
     }
 
     fn update(&self, _actor: &str, txt: String) -> Result<Vec<u8>, Box<dyn Error + Sync + Send>> {
-        println!("update {}", txt);
-        todo!()
+        say(&txt).map_err(|e| anyhow!("error writing to display: {:?}", e))?;
+        Ok(vec![])
     }
 }
 
@@ -122,4 +131,27 @@ impl CapabilityProvider for OledSsd1306Provider {
             _ => Err("bad dispatch".into()),
         }
     }
+}
+
+fn say(txt: &str) -> Result<()> {
+    let i2c = I2cdev::new("/dev/i2c-1")?;
+    let interface = I2CDIBuilder::new().init(i2c);
+    let mut display: GraphicsMode<_> = Builder::new().connect(interface).into();
+
+    display
+        .init()
+        .map_err(|_| anyhow!("error initializing display"))?;
+
+    let text_style = TextStyleBuilder::new(Font6x8)
+        .text_color(BinaryColor::On)
+        .build();
+
+    Text::new(txt, Point::new(0, 0))
+        .into_styled(text_style)
+        .draw(&mut display)
+        .map_err(|_| anyhow!("error writing text"))?;
+
+    display
+        .flush()
+        .map_err(|_| anyhow!("error flushing display"))
 }

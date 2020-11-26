@@ -12,6 +12,11 @@ crate-type = ["cdylib", "rlib"]
 static_plugin = []
 
 [dependencies]
+anyhow = "1.0.34"
+embedded-graphics = "0.6.2"
 env_logger = "0.8.2"
+linux-embedded-hal = "0.3.0"
 log = "0.4.11"
+machine-ip = "0.2.1"
+ssd1306 = "0.4.0"
 wascc-codec = "0.8.1"
