@@ -2,8 +2,7 @@ APP = oled_actor
 COLOR ?= always # Valid COLOR options: {always, auto, never}
 CARGO = cargo --color $(COLOR)
 TARGET = wasm32-unknown-unknown
-DEBUG = $(TARGET)/debug
-RELEASE = $(TARGET)/release
+DEBUG = target/$(TARGET)/debug
 KEYDIR ?= .keys
 
 .PHONY: all bench build keys keys-account keys-module
