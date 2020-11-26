@@ -1,6 +1,6 @@
-schema: ./schemas/ssd1306.widl
+schema: ./schemas/oled_provider.widl
 generates:
-  src/generated/ssd1306.rs:
+  src/generated/oled_provider.rs:
     package: widl-codegen/language/rust
     visitorClass: ModuleVisitor
 ---

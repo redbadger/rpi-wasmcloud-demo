@@ -5,7 +5,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let _ = env_logger::try_init();
     let host = Host::new();
     host.add_actor(Actor::from_file(
-        "../hello-http/target/wasm32-unknown-unknown/debug/hello_http_signed.wasm",
+        "../oled_actor/target/wasm32-unknown-unknown/debug/oled_actor_signed.wasm",
     )?)?;
     host.add_native_capability(NativeCapability::from_file(
         "../../../src/capability-providers/http-server/target/debug/libwascc_httpsrv.dylib",
