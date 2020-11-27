@@ -1,6 +1,8 @@
 # Raspberry Pi with WaSCC
 
-This is a demo running WaSCC lattice on MacOS and Raspberry Pi 4B
+This is a demo of WaSCC lattice across Apple Mac and Raspberry Pi 4B.
+
+Send an HTTP request to an endpoint on the Mac to control an OLED display on Raspberry Pi.
 
 ![WaSCC lattice across Mac and Pi](./docs/wascc-lattice.svg)
 
@@ -48,28 +50,15 @@ This is a demo running WaSCC lattice on MacOS and Raspberry Pi 4B
 4. On the Pi:
 
    ```sh
-   (
-      cd pi_oled_provider
-      make
-   )
-   (
-      cd pi_host
-      make NATS_IP=192.168.121.180 # set NATS_IP to the IP of your Mac (see step 2)
-   )
+   (cd pi_oled_provider && make)
+   (cd pi_host && make NATS_IP=192.168.121.180)  # set NATS_IP to the IP of your Mac (see step 2)
    ```
 
 5. On the Mac:
 
    ```sh
-   (
-      cd wasm_oled_actor
-      make keys
-      make
-   )
-   (
-      cd mac_host
-      make
-   )
+   (cd wasm_oled_actor && make)
+   (cd mac_host && make)
    ```
 
 6. On the Mac:
