@@ -70,3 +70,10 @@ This is a demo running WaSCC lattice on MacOS and Raspberry Pi 4B
       make NATS_IP=192.168.121.180 # set NATS_IP to the IP of your Mac (see step 2)
    )
    ```
+
+6. On the Mac:
+
+   ```sh
+   curl -X POST -vv http://localhost:8081/Hello_from_WaSCC
+   curl -X DELETE -vv http://localhost:8081
+   ```
