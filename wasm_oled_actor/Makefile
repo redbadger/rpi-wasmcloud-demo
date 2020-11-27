@@ -1,7 +1,7 @@
 APP = wasm_oled_actor
 COLOR ?= always # Valid COLOR options: {always, auto, never}
 CARGO = cargo --color $(COLOR)
-TARGET = wasm32-wasi
+TARGET = wasm32-unknown-unknown
 DEBUG = target/$(TARGET)/debug
 KEYDIR ?= .keys
 
@@ -11,7 +11,12 @@ all: build
 
 build:
 	@$(CARGO) build --target $(TARGET)
-	wascap sign $(DEBUG)/$(APP).wasm $(DEBUG)/$(APP)_signed.wasm -i $(KEYDIR)/account.nk -u $(KEYDIR)/module.nk -s -n $(APP)
+	wascap sign $(DEBUG)/$(APP).wasm $(DEBUG)/$(APP)_signed.wasm \
+		-i $(KEYDIR)/account.nk \
+		-u $(KEYDIR)/module.nk \
+		-s \
+		-c red-badger:oled-ssd1306 \
+		-n $(APP)
 	wash claims inspect $(DEBUG)/$(APP)_signed.wasm
 	
 keys: keys-account keys-module

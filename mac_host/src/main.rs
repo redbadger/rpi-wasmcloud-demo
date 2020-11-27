@@ -5,7 +5,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let _ = env_logger::try_init();
     let host = Host::new();
     host.add_actor(Actor::from_file(
-        "../wasm_oled_actor/target/wasm32-wasi/debug/wasm_oled_actor_signed.wasm",
+        "../wasm_oled_actor/target/wasm32-unknown-unknown/debug/wasm_oled_actor_signed.wasm",
     )?)?;
     host.add_native_capability(NativeCapability::from_file(
         "../../../src/capability-providers/http-server/target/debug/libwascc_httpsrv.dylib",
@@ -17,6 +17,12 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         "wascc:http_server",
         None,
         generate_port_config(8081),
+    )?;
+    host.set_binding(
+        "MDNKUUYGVK2OSEH5EUBRF2UYABTTYZFZCF6WA5OF7GURJFB235CLUZMN",
+        "red-badger:oled-ssd1306",
+        None,
+        HashMap::new(),
     )?;
 
     std::thread::park();
