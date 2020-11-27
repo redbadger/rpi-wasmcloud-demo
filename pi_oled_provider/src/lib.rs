@@ -31,6 +31,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 const REVISION: u32 = 0; // Typically incremented after each publication in crates or [gantry](https://github.com/wascc/gantry)
 
 const OP_UPDATE: &str = "Update";
+const OP_CLEAR: &str = "Clear";
 
 #[cfg(not(feature = "static_plugin"))]
 capability_provider!(OledSsd1306Provider, OledSsd1306Provider::new);
@@ -91,8 +92,18 @@ impl OledSsd1306Provider {
                     OperationDirection::Both,
                     "Updates text on the OLED display",
                 ) // TODO: make the operation descriptors match your real interface
+                .with_operation(
+                    OP_CLEAR,
+                    OperationDirection::Both,
+                    "Clears the OLED display",
+                ) // TODO: make the operation descriptors match your real interface
                 .build(),
         )?)
+    }
+
+    fn clear(&self, _actor: &str) -> Result<Vec<u8>, Box<dyn Error + Sync + Send>> {
+        clear().map_err(|e| anyhow!("error writing to display: {:?}", e))?;
+        Ok(vec![])
     }
 
     fn update(&self, _actor: &str, txt: String) -> Result<Vec<u8>, Box<dyn Error + Sync + Send>> {
@@ -129,10 +140,25 @@ impl CapabilityProvider for OledSsd1306Provider {
             OP_BIND_ACTOR if actor == SYSTEM_ACTOR => self.configure(deserialize(msg)?),
             OP_REMOVE_ACTOR if actor == SYSTEM_ACTOR => self.deconfigure(deserialize(msg)?),
             OP_GET_CAPABILITY_DESCRIPTOR if actor == SYSTEM_ACTOR => self.get_descriptor(),
+            OP_CLEAR => self.clear(actor),
             OP_UPDATE => self.update(actor, deserialize(msg)?),
             _ => Err("bad dispatch".into()),
         }
     }
+}
+
+fn clear() -> Result<()> {
+    let i2c = I2cdev::new("/dev/i2c-1")?;
+    let interface = I2CDIBuilder::new().init(i2c);
+    let mut display: GraphicsMode<_> = Builder::new().connect(interface).into();
+
+    display
+        .init()
+        .map_err(|_| anyhow!("error initializing display"))?;
+
+    display
+        .flush()
+        .map_err(|_| anyhow!("error flushing display"))
 }
 
 fn say(txt: &str) -> Result<()> {
