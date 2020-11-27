@@ -5,7 +5,7 @@ TARGET = wasm32-unknown-unknown
 DEBUG = target/$(TARGET)/debug
 KEYDIR ?= .keys
 
-.PHONY: all bench build keys keys-account keys-module
+.PHONY: all build keys keys-account keys-module
 
 all: build
 

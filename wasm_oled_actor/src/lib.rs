@@ -4,24 +4,35 @@
 extern crate serde_json;
 
 use actor::prelude::*;
+use codec::{
+    core::{self, HealthRequest},
+    http::{self, Request, Response},
+};
 use wascc_actor as actor;
 
+const CAP_OLED: &str = "red-badger:oled-ssd1306";
+
 actor_handlers! {
-    codec::http::OP_HANDLE_REQUEST => handler,
-    codec::core::OP_HEALTH_REQUEST => health
+    http::OP_HANDLE_REQUEST => handler,
+    core::OP_HEALTH_REQUEST => health
 }
 
-fn handler(payload: codec::http::Request) -> HandlerResult<codec::http::Response> {
-    let res = untyped::default().call(
-        "red-badger:oled-ssd1306",
-        "Update",
-        serialize(payload.path)?,
-    )?;
+fn handler(payload: Request) -> HandlerResult<Response> {
+    match payload.method.as_ref() {
+        "POST" => {
+            let res = untyped::default().call(CAP_OLED, "Update", serialize(payload.path)?)?;
 
-    let result = json!(res);
-    Ok(codec::http::Response::json(result, 200, "OK"))
+            let result = json!(res);
+            Ok(Response::json(result, 200, "OK"))
+        }
+        "DELETE" => {
+            untyped::default().call(CAP_OLED, "Clear", vec![])?;
+            Ok(Response::ok())
+        }
+        _ => Ok(Response::bad_request()),
+    }
 }
 
-fn health(_req: codec::core::HealthRequest) -> HandlerResult<()> {
+fn health(_req: HealthRequest) -> HandlerResult<()> {
     Ok(())
 }
