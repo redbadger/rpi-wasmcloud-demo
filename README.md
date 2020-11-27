@@ -10,6 +10,7 @@ This is a demo running WaSCC lattice on MacOS and Raspberry Pi 4B
 
    1. Rust `1.50.0-nightly`
    2. Rust Analyzer – `aarch64` builds are currently only available on nightly (`rustup component add rust-analyzer-preview`)
+   3. I2C enabled in `sudo raspi-config`
 
 2. OLED display with SSD1306 display driver
 
@@ -53,7 +54,7 @@ This is a demo running WaSCC lattice on MacOS and Raspberry Pi 4B
    )
    (
       cd pi_host
-      make
+      make NATS_IP=192.168.121.180 # set NATS_IP to the IP of your Mac (see step 2)
    )
    ```
 
@@ -67,7 +68,7 @@ This is a demo running WaSCC lattice on MacOS and Raspberry Pi 4B
    )
    (
       cd mac_host
-      make NATS_IP=192.168.121.180 # set NATS_IP to the IP of your Mac (see step 2)
+      make
    )
    ```
 
