@@ -1,3 +1,5 @@
+#![allow(clippy::unnecessary_wraps)]
+
 #[macro_use]
 extern crate wascc_codec as codec;
 
@@ -60,7 +62,7 @@ impl OledSsd1306Provider {
         // This is typically where you would establish a
         // client or connection to a resource on behalf of
         // an actor
-        println!("configure!");
+        trace!("configure!");
 
         Ok(vec![])
     }
@@ -70,7 +72,7 @@ impl OledSsd1306Provider {
         _config: CapabilityConfiguration,
     ) -> Result<Vec<u8>, Box<dyn Error + Sync + Send>> {
         // Handle removal of resources claimed by an actor here
-        println!("de-configure!");
+        trace!("de-configure!");
 
         Ok(vec![])
     }
