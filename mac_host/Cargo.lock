@@ -1866,7 +1866,7 @@ dependencies = [
  "structopt",
  "uuid",
  "wascap",
- "wascc-codec 0.8.1",
+ "wascc-codec",
 ]
 
 [[package]]
@@ -3608,19 +3608,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "wascc-codec"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6a9727b42ad2569e7d535b050c269cf6e01cf9a6b272346965db17b7af03120b"
-dependencies = [
- "rmp-serde",
- "serde",
- "serde_bytes",
- "serde_derive",
- "serde_json",
-]
-
-[[package]]
 name = "wascc-host"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3646,15 +3633,15 @@ dependencies = [
  "uuid",
  "wapc",
  "wascap",
- "wascc-codec 0.8.1",
+ "wascc-codec",
  "wasmtime-provider",
 ]
 
 [[package]]
 name = "wascc-httpsrv"
-version = "0.9.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7c9a29c0c8893f244de85f8049f9054eb288991845e9c5090ceaebf0810a92c"
+checksum = "5dc5266ac6f598234b69b6dff882eb3be3b6bd460ea5e6dd2fbe00836410854b"
 dependencies = [
  "actix-multipart",
  "actix-rt",
@@ -3665,10 +3652,7 @@ dependencies = [
  "env_logger 0.7.1",
  "futures",
  "log",
- "rmp-serde",
- "serde",
- "serde_bytes",
- "wascc-codec 0.9.0",
+ "wascc-codec",
 ]
 
 [[package]]
