@@ -21,7 +21,7 @@ This is a demo running WaSCC lattice on MacOS and Raspberry Pi 4B
       3. `SCL` - pin 5
       4. `SDA` - pin 3
 
-3. NATs server on the mac:
+3. NATS server on the mac:
 
    ```sh
    brew install nats-server
@@ -34,11 +34,17 @@ This is a demo running WaSCC lattice on MacOS and Raspberry Pi 4B
 
 ## Run it
 
-1. Clone this repo on both the Pi and the Mac.
+1. Clone this repo on both the Pi and your Mac.
 
-2. Connect VSCode to the Pi over SSH (_cmd-shift-P_ then `Remote-SSH: Connect to Host`) or connect over SSH with a terminal.
+2. Find the IP address of your Mac:
 
-3. On the Pi:
+   ```sh
+   ipconfig getifaddr en0
+   ```
+
+3. Connect VSCode to the Pi over SSH (_cmd-shift-P_ then `Remote-SSH: Connect to Host`) or connect over SSH with a terminal.
+
+4. On the Pi:
 
    ```sh
    (
@@ -51,7 +57,7 @@ This is a demo running WaSCC lattice on MacOS and Raspberry Pi 4B
    )
    ```
 
-4. On the Mac:
+5. On the Mac:
 
    ```sh
    (
@@ -61,6 +67,6 @@ This is a demo running WaSCC lattice on MacOS and Raspberry Pi 4B
    )
    (
       cd mac_host
-      make
+      make NATS_IP=192.168.121.180 # set NATS_IP to the IP of your Mac (see step 2)
    )
    ```
