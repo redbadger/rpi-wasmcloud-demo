@@ -74,6 +74,6 @@ This is a demo running WaSCC lattice on MacOS and Raspberry Pi 4B
 6. On the Mac:
 
    ```sh
-   curl -X POST -vv http://localhost:8081/Hello_from_WaSCC
-   curl -X DELETE -vv http://localhost:8081
+   curl -d 'Hello from WaSCC!' http://localhost:8081
+   curl -X DELETE http://localhost:8081
    ```

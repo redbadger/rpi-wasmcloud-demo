@@ -20,7 +20,8 @@ actor_handlers! {
 fn handler(payload: Request) -> HandlerResult<Response> {
     match payload.method.as_ref() {
         "POST" => {
-            let res = untyped::default().call(CAP_OLED, "Update", serialize(payload.path)?)?;
+            let body = std::str::from_utf8(payload.body.as_slice())?;
+            let res = untyped::default().call(CAP_OLED, "Update", serialize(body)?)?;
 
             let result = json!(res);
             Ok(Response::json(result, 200, "OK"))
