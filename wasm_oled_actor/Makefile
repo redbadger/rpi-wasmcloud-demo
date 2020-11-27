@@ -1,7 +1,7 @@
-APP = oled_actor
+APP = wasm_oled_actor
 COLOR ?= always # Valid COLOR options: {always, auto, never}
 CARGO = cargo --color $(COLOR)
-TARGET = wasm32-unknown-unknown
+TARGET = wasm32-wasi
 DEBUG = target/$(TARGET)/debug
 KEYDIR ?= .keys
 
@@ -12,6 +12,7 @@ all: build
 build:
 	@$(CARGO) build --target $(TARGET)
 	wascap sign $(DEBUG)/$(APP).wasm $(DEBUG)/$(APP)_signed.wasm -i $(KEYDIR)/account.nk -u $(KEYDIR)/module.nk -s -n $(APP)
+	wash claims inspect $(DEBUG)/$(APP)_signed.wasm
 	
 keys: keys-account keys-module
 

@@ -1,7 +1,7 @@
 [package]
 authors = ["pi"]
 edition = "2018"
-name = "oled_provider"
+name = "pi_oled_provider"
 version = "0.1.0"
 
 [lib]

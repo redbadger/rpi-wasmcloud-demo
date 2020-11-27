@@ -1,7 +1,7 @@
 [package]
 authors = ["Stuart Harris <stuart.harris@red-badger.com>"]
 edition = "2018"
-name = "oled_actor"
+name = "wasm_oled_actor"
 version = "0.0.1"
 
 [lib]
