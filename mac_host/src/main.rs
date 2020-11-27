@@ -14,7 +14,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     host.add_native_capability(http_server_provider)?;
 
     let actor = Actor::from_file(
-        "../wasm_oled_actor/target/wasm32-unknown-unknown/debug/wasm_oled_actor_signed.wasm",
+        "../wasm_oled_actor/target/wasm32-unknown-unknown/debug/wasm_oled_actor_s.wasm",
     )?;
     let actor_pub_key = &actor.public_key();
     host.add_actor(actor)?;
