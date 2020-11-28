@@ -1,8 +1,14 @@
-# Raspberry Pi with WaSCC
+# Raspberry Pi WaSCC Demo
 
-This is a demo of WaSCC lattice across Apple Mac and Raspberry Pi 4B.
+This is a demo of a WaSCC [lattice](https://wascc.dev/docs/lattice/overview/) across Apple Mac and Raspberry Pi.
 
-Send an HTTP request to an endpoint on the Mac to control an OLED display on Raspberry Pi.
+> _A lattice is a seamless, distributed unit of compute that can self-form atop any combination of cloud, edge, and physical infrastructure._
+
+The lattice is made of two [WaSCC](https://wascc.dev/) nodes, one on the Mac and the other on the Pi.
+
+The Mac node hosts an HTTP server provider that forwards incoming requests to a sandboxed [WASM](https://webassembly.org/) actor, which can run on any node.
+
+The WASM sandboxed actor contains our "business" logic and only has permissions to talk with the HTTP server provider and the OLED provider. The latter is dynamically linked into the node running on the Raspberry Pi, where it natively controls an OLED display.
 
 ![WaSCC lattice across Mac and Pi](./docs/wascc-lattice.svg)
 
@@ -17,8 +23,8 @@ Send an HTTP request to an endpoint on the Mac to control an OLED display on Ras
 2. OLED display with SSD1306 display driver
 
    1. [MakerHawk OLED Display Module, SSD1306, 128x64](https://smile.amazon.co.uk/gp/product/B0777HHQDT)
-   2. Solder the header pins onto the OLED board
-   3. Use jumper leads to these pins on the Pi:
+   2. Header pins need soldering onto the OLED board
+   3. Jumper leads to these pins on the Pi:
       1. `VCC` - pin 1
       2. `GND` - pin 6
       3. `SCL` - pin 5
