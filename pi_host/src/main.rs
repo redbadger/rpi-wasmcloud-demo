@@ -1,4 +1,7 @@
+use std::collections::HashMap;
 use wascc_host::{Actor, Host, NativeCapability};
+
+const CAP_OLED_PROVIDER: &str = "red-badger:oled-ssd1306";
 
 fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let _ = env_logger::try_init();
