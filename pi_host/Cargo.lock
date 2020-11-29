@@ -1760,6 +1760,7 @@ name = "pi_host"
 version = "0.1.0"
 dependencies = [
  "env_logger 0.8.2",
+ "structopt",
  "wascc-host",
 ]
 
