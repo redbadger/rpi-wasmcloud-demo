@@ -1,4 +1,4 @@
-use wascc_host::{Host, NativeCapability};
+use wascc_host::{Actor, Host, NativeCapability};
 
 fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let _ = env_logger::try_init();
@@ -8,7 +8,28 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         None,
     )?)?;
 
+    let actor = Actor::from_file(
+        "../wasm_oled_actor/target/wasm32-unknown-unknown/debug/wasm_oled_actor_s.wasm",
+    )?;
+    let actor_pub_key = &actor.public_key();
+    host.add_actor(actor)?;
+
+    host.set_binding(
+        actor_pub_key,
+        "wascc:http_server",
+        None,
+        generate_port_config(8081),
+    )?;
+    host.set_binding(actor_pub_key, CAP_OLED_PROVIDER, None, HashMap::new())?;
+
     std::thread::park();
 
     Ok(())
+}
+
+fn generate_port_config(port: u16) -> HashMap<String, String> {
+    let mut hm = HashMap::new();
+    hm.insert("PORT".to_string(), port.to_string());
+
+    hm
 }

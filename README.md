@@ -8,7 +8,7 @@ The lattice is made of two [WaSCC](https://wascc.dev/) nodes, one on the Mac and
 
 The Mac node hosts an HTTP server provider that forwards incoming requests to a sandboxed [WASM](https://webassembly.org/) actor, which can run on any node.
 
-The WASM sandboxed actor contains our "business" logic and only has permissions to talk with the HTTP server provider and the OLED provider. The latter is dynamically linked into the node running on the Raspberry Pi, where it natively controls an OLED display.
+The WASM actor contains our "business" logic. It is signed and only given permissions to talk with the HTTP server provider and the OLED provider. The latter is dynamically linked into the node running on the Raspberry Pi, where it natively controls an OLED display.
 
 ![WaSCC lattice across Mac and Pi](./docs/wascc-lattice.svg)
 
@@ -30,7 +30,7 @@ The WASM sandboxed actor contains our "business" logic and only has permissions 
       3. `SCL` - pin 5
       4. `SDA` - pin 3
 
-3. NATS server on the mac:
+3. NATS server on the Mac:
 
    ```sh
    brew install nats-server
@@ -38,8 +38,15 @@ The WASM sandboxed actor contains our "business" logic and only has permissions 
    ```
 
 4. VSCode with these extensions
+
    1. [Remote SSH](https://code.visualstudio.com/docs/remote/ssh)
    2. [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer)
+
+5. [`wash`](https://github.com/wascc/wash) cli installed on the Mac:
+
+   ```sh
+   cargo install wash-cli
+   ```
 
 ## Run it
 
