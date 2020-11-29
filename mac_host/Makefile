@@ -1,4 +1,6 @@
+ARGS ?= --actor
+
 .PHONY: run
 
 run:
-	RUST_LOG=crane=warn,info cargo run
+	RUST_LOG=crane=warn,info cargo run -- $(ARGS)
