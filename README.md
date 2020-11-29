@@ -64,6 +64,7 @@ The WASM actor contains our "business" logic. It is signed and only given permis
 
    ```sh
    (cd pi_oled_provider && make)
+   (cd wasm_oled_actor && make)
    (cd pi_host && make NATS_IP=192.168.121.180)  # set NATS_IP to the IP of your Mac (see step 2)
    ```
 
@@ -74,9 +75,18 @@ The WASM actor contains our "business" logic. It is signed and only given permis
    (cd mac_host && make)
    ```
 
-6. On the Mac:
+6. To test it out:
 
    ```sh
    curl -d 'Hello from WaSCC!' http://localhost:8081
    curl -X DELETE http://localhost:8081
+   ```
+
+7. To run the actor on the Pi instead of the Mac:
+
+   ```sh
+   # on the Pi
+   (cd pi_host && make NATS_IP=192.168.121.180 ARGS=--actor)  # set NATS_IP to the IP of your Mac (see step 2)
+   # on the Mac
+   (cd mac_host && make ARGS=)
    ```
