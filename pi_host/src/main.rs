@@ -5,7 +5,7 @@ use wascc_host::{Actor, Host, NativeCapability};
 const CAP_OLED_PROVIDER: &str = "red-badger:oled-ssd1306";
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "mac_host", about = "WaSCC host to run on Mac")]
+#[structopt(name = "pi_host", about = "WaSCC host to run on Pi")]
 struct Opt {
     /// run actor in this process
     #[structopt(short, long)]
@@ -33,7 +33,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
             actor_pub_key,
             "wascc:http_server",
             None,
-            generate_port_config(8081),
+            generate_port_config(8082),
         )?;
         host.set_binding(actor_pub_key, CAP_OLED_PROVIDER, None, HashMap::new())?;
     }
