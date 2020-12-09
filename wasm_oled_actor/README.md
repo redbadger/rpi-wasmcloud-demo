@@ -14,4 +14,8 @@ To build your new module, use `make build`. This will compile your code with `ca
 - Make is recommended, but not strictly necessary
 - [wascap](https://github.com/wascc/wascap) is required for signing actor modules
 - [nk](https://github.com/encabulators/nkeys) is required if you need to generate keys (which you almost certainly do)
+- Wash cli
 
+  ```sh
+  cargo install wash-cli --git https://github.com/wasmCloud/wash.git --tag v0.1.10
+  ```

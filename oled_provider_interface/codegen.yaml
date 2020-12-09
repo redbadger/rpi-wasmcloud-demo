@@ -1,0 +1,5 @@
+schema: ./schemas/oled_provider.widl
+generates:
+  src/generated.rs:
+    package: widl-codegen/language/rust
+    visitorClass: ModuleVisitor

@@ -1,0 +1,8 @@
+actors:
+  - ./wasm_oled_actor/target/wasm32-unknown-unknown/wasm_oled_actor_s.wasm
+capabilities: []
+bindings:
+  - actor: "MBWE2IPHK5WRVSMN7QPEPTCPA5PR74IKHVOGITESN7NTSQKCFUXXNP6J"
+    capability: "wascc:http_server"
+    values:
+      PORT: "8081"
