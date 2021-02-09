@@ -3,7 +3,7 @@ authors = ["stuart.harris@red-badger.com"]
 description = "Actor interface for OLED provider"
 edition = "2018"
 license = "MIT"
-name = "oled"
+name = "oled_ssd1306"
 version = "0.0.1"
 
 [lib]
