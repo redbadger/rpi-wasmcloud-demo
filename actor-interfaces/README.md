@@ -8,10 +8,10 @@ npm install -g git+https://github.com/wapc/cli.git#master
 
 ## Create a new capability
 
-For example for the `oled` provider:
+For example for the `oled_ssd1306` provider:
 
 ```sh
-wapc new rust oled
+wapc new rust oled_ssd1306
 ```
 
-Edit the `schema.widl` file, then `(cd oled && make)`.
+Edit the `schema.widl` file, then `(cd oled_ssd1306 && make)`.
