@@ -1,9 +1,8 @@
 #![allow(clippy::unnecessary_wraps)]
 
-use actor_core as core;
-use actor_http_server as http;
-use oled_provider_interface as oled;
 use wapc_guest::prelude::*;
+use wasmcloud_actor_core as core;
+use wasmcloud_actor_http_server as http;
 
 #[no_mangle]
 pub fn wapc_init() {
@@ -14,11 +13,11 @@ pub fn wapc_init() {
 fn handler(payload: http::Request) -> HandlerResult<http::Response> {
     match payload.method.as_ref() {
         "POST" => {
-            oled::default().update(String::from_utf8(payload.body)?)?;
+            oled_ssd1306_interface::default().update(String::from_utf8(payload.body)?)?;
             Ok(http::Response::ok())
         }
         "DELETE" => {
-            oled::default().update(String::new())?;
+            oled_ssd1306_interface::default().clear()?;
             Ok(http::Response::ok())
         }
         _ => Ok(http::Response::bad_request()),

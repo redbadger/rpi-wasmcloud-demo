@@ -1,4 +1,4 @@
-APP = wasm_oled_actor
+APP = oled_actor
 COLOR ?= always # Valid COLOR options: {always, auto, never}
 CARGO = cargo --color $(COLOR)
 TARGET = wasm32-unknown-unknown

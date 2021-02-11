@@ -2,6 +2,7 @@ namespace "red-badger:oled-ssd1306"
 
 interface {
     Update(txt: string): UpdateResponse
+    Clear(): UpdateResponse
 }
 
 type UpdateResponse {

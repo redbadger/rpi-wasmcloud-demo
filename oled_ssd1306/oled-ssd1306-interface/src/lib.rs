@@ -22,20 +22,5 @@
 //! ```
 //!
 
-pub mod generated;
-
-#[cfg(test)]
-mod test {
-    extern crate wapc_guest;
-    use super::generated::{Handlers, UpdateResponse};
-    use wapc_guest::HandlerResult;
-
-    #[test]
-    fn it_works() {
-        Handlers::register_update(hr);
-    }
-
-    fn hr(_req: String) -> HandlerResult<UpdateResponse> {
-        Ok(UpdateResponse { success: true })
-    }
-}
+mod generated;
+pub use generated::*;

@@ -3,7 +3,7 @@ authors = ["Stuart Harris <stuart.harris@red-badger.com>"]
 description = "OLED provider for ssd1306"
 edition = "2018"
 license = "MIT"
-name = "oled_ssd1306_provider"
+name = "oled-ssd1306-provider"
 version = "0.1.0"
 
 [lib]

@@ -36,11 +36,26 @@ pub fn default() -> Host {
 
 impl Host {
     pub fn update(&self, txt: String) -> HandlerResult<UpdateResponse> {
-        let input_args = UpdateArgs { txt: txt };
+        let input_args = UpdateArgs { txt };
         host_call(
             &self.binding,
             "red-badger:oled-ssd1306",
             "Update",
+            &serialize(input_args)?,
+        )
+        .map(|vec| {
+            let resp = deserialize::<UpdateResponse>(vec.as_ref()).unwrap();
+            resp
+        })
+        .map_err(|e| e.into())
+    }
+
+    pub fn clear(&self) -> HandlerResult<UpdateResponse> {
+        let input_args = ClearArgs {};
+        host_call(
+            &self.binding,
+            "red-badger:oled-ssd1306",
+            "Clear",
             &serialize(input_args)?,
         )
         .map(|vec| {
@@ -58,11 +73,16 @@ impl Handlers {
         *UPDATE.write().unwrap() = Some(f);
         register_function(&"Update", update_wrapper);
     }
+    pub fn register_clear(f: fn() -> HandlerResult<UpdateResponse>) {
+        *CLEAR.write().unwrap() = Some(f);
+        register_function(&"Clear", clear_wrapper);
+    }
 }
 
 lazy_static! {
     static ref UPDATE: RwLock<Option<fn(String) -> HandlerResult<UpdateResponse>>> =
         RwLock::new(None);
+    static ref CLEAR: RwLock<Option<fn() -> HandlerResult<UpdateResponse>>> = RwLock::new(None);
 }
 
 fn update_wrapper(input_payload: &[u8]) -> CallResult {
@@ -72,11 +92,21 @@ fn update_wrapper(input_payload: &[u8]) -> CallResult {
     Ok(serialize(result)?)
 }
 
+fn clear_wrapper(input_payload: &[u8]) -> CallResult {
+    let _input = deserialize::<ClearArgs>(input_payload)?;
+    let lock = CLEAR.read().unwrap().unwrap();
+    let result = lock()?;
+    Ok(serialize(result)?)
+}
+
 #[derive(Debug, PartialEq, Deserialize, Serialize, Default, Clone)]
 pub struct UpdateArgs {
     #[serde(rename = "txt")]
     pub txt: String,
 }
+
+#[derive(Debug, PartialEq, Deserialize, Serialize, Default, Clone)]
+pub struct ClearArgs {}
 
 #[derive(Debug, PartialEq, Deserialize, Serialize, Default, Clone)]
 pub struct UpdateResponse {

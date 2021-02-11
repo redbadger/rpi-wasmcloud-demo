@@ -1,8 +1,8 @@
 [workspace]
 
 members = [
-  "oled_ssd1306_interface",
-  "oled_ssd1306_provider",
+  "oled-ssd1306-interface",
+  "oled-ssd1306-provider",
 ]
 
 [profile.release]

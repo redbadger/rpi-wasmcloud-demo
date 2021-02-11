@@ -1,4 +1,4 @@
-CONST_FILE := oled_ssd1306_provider/src/lib.rs
+CONST_FILE := oled-ssd1306-provider/src/lib.rs
 define readvar
 $(or $(shell sed -nE 's/^.*$(1).*"(.*)";$$/\1/p' $(CONST_FILE)),$(error "Cannot find variable $(1)"))
 endef
@@ -15,7 +15,7 @@ TARGETS := armv7-unknown-linux-gnueabihf
 
 .PHONY: $(TARGETS)
 $(TARGETS):
-	cross build -p oled_ssd1306_provider --target $@ --release
+	cross build -p oled-ssd1306-provider --target $@ --release
 
 .PHONY: par
 par: $(TARGETS)
@@ -32,18 +32,18 @@ par: $(TARGETS)
 
 .PHONY: codegen
 codegen:
-	cd oled_ssd1306_interface && wapc generate codegen.yaml
+	cd oled-ssd1306-interface && wapc generate codegen.yaml
 
 .PHONY: interface
 interface:
-	cargo build -p oled_ssd1306_interface --target wasm32-unknown-unknown --release
+	cargo build -p oled-ssd1306-interface --target wasm32-unknown-unknown --release
 	mkdir -p build && cp target/wasm32-unknown-unknown/release/*.wasm build/
 
 .PHONY: clean
 clean:
 	cargo clean
-	rm -Rf oled_ssd1306_interface/build
+	rm -Rf oled-ssd1306-interface/build
 
 .PHONY: test
 test: build
-	cargo -p oled_ssd1306_interface test
+	cargo -p oled-ssd1306-interface test

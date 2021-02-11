@@ -91,12 +91,12 @@ impl OledSsd1306Provider {
                 .revision(REVISION)
                 .with_operation(
                     OP_UPDATE,
-                    OperationDirection::Both,
+                    OperationDirection::ToProvider,
                     "Updates text on the OLED display",
                 ) // TODO: make the operation descriptors match your real interface
                 .with_operation(
                     OP_CLEAR,
-                    OperationDirection::Both,
+                    OperationDirection::ToProvider,
                     "Clears the OLED display",
                 ) // TODO: make the operation descriptors match your real interface
                 .build(),

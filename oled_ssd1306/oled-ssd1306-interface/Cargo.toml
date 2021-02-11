@@ -1,0 +1,29 @@
+[package]
+authors = ["stuart.harris@red-badger.com"]
+categories = ["wasm", "api-bindings"]
+description = "OLED Client Actor Interface for wasmCloud Actors"
+edition = "2018"
+keywords = ["webassembly", "wasm", "wasmcloud", "actor", "graph"]
+license = "Apache-2.0"
+name = "oled-ssd1306-interface"
+readme = "README.md"
+repository = "https://github.com/redbadger/rpi-wascc-demo"
+version = "0.0.1"
+
+[dependencies]
+lazy_static = {version = "1.4.0"}
+log = {version = "0.4.14", features = ["std", "serde"]}
+rmp-serde = "0.15.4"
+serde = {version = "1.0.123", features = ["derive"]}
+serde_bytes = "0.11.5"
+wapc-guest = {version = "0.4.0"}
+
+[dev-dependencies]
+base64 = "0.13.0"
+serde_json = "1.0.62"
+structopt = "0.3.21"
+wasmcloud-actor-core = {version = "0.2.0", features = ["guest"]}
+wasmcloud-actor-http-server = {version = "0.1.0", features = ["guest"]}
+
+[badges]
+maintenance = {status = "actively-developed"}
