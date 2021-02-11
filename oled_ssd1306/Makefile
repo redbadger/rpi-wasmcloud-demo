@@ -11,7 +11,7 @@ VENDOR        ?= red-badger
 REVISION	  ?= 0
 DESTINATION   ?= $(NAME).par.gz
 
-TARGETS := armv7-unknown-linux-gnueabihf
+TARGETS := aarch64-unknown-linux-gnu
 
 .PHONY: $(TARGETS)
 $(TARGETS):
@@ -21,7 +21,7 @@ $(TARGETS):
 par: $(TARGETS)
 	cd build && wash par create \
 		--arch aarch64-linux \
-		--binary ../target/armv7-unknown-linux-gnueabihf/release/lib$(LIBNAME).so \
+		--binary ../target/aarch64-unknown-linux-gnu/release/lib$(LIBNAME).so \
 		--capid $(CAPABILITY_ID) \
 		--name $(NAME) \
 		--vendor $(VENDOR) \
