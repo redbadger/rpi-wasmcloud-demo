@@ -1,8 +1,5 @@
-#![allow(clippy::unnecessary_wraps)]
-
 #[macro_use]
 extern crate wascc_codec as codec;
-
 #[macro_use]
 extern crate log;
 
@@ -12,7 +9,7 @@ use codec::{
         CapabilityDescriptor, CapabilityProvider, Dispatcher, NullDispatcher, OperationDirection,
         OP_GET_CAPABILITY_DESCRIPTOR,
     },
-    core::{CapabilityConfiguration, OP_BIND_ACTOR, OP_REMOVE_ACTOR},
+    core::{OP_BIND_ACTOR, OP_HEALTH_REQUEST, OP_REMOVE_ACTOR},
     deserialize, serialize,
 };
 use embedded_graphics::{
@@ -23,12 +20,16 @@ use embedded_graphics::{
 };
 use linux_embedded_hal::I2cdev;
 use ssd1306::{prelude::*, Builder, I2CDIBuilder};
-use std::{error::Error, sync::RwLock};
+use std::{
+    error::Error,
+    sync::{Arc, RwLock},
+};
+use wasmcloud_actor_core::{CapabilityConfiguration, HealthCheckResponse};
 
 const SYSTEM_ACTOR: &str = "system";
-const CAPABILITY_ID: &str = "red-badger:oled-ssd1306"; // TODO: change this to an appropriate capability ID
+const CAPABILITY_ID: &str = "red-badger:oled-ssd1306";
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-const REVISION: u32 = 0; // Typically incremented after each publication in crates or [gantry](https://github.com/wascc/gantry)
+const REVISION: u32 = 0; // Increment for each crates publish
 
 const OP_UPDATE: &str = "Update";
 const OP_CLEAR: &str = "Clear";
@@ -36,8 +37,9 @@ const OP_CLEAR: &str = "Clear";
 #[cfg(not(feature = "static_plugin"))]
 capability_provider!(OledSsd1306Provider, OledSsd1306Provider::new);
 
+#[derive(Clone)]
 pub struct OledSsd1306Provider {
-    dispatcher: RwLock<Box<dyn Dispatcher>>,
+    dispatcher: Arc<RwLock<Box<dyn Dispatcher>>>,
 }
 
 impl Default for OledSsd1306Provider {
@@ -45,7 +47,7 @@ impl Default for OledSsd1306Provider {
         let _ = env_logger::try_init();
 
         OledSsd1306Provider {
-            dispatcher: RwLock::new(Box::new(NullDispatcher::new())),
+            dispatcher: Arc::new(RwLock::new(Box::new(NullDispatcher::new()))),
         }
     }
 }
@@ -134,23 +136,31 @@ impl CapabilityProvider for OledSsd1306Provider {
         op: &str,
         msg: &[u8],
     ) -> Result<Vec<u8>, Box<dyn Error + Sync + Send>> {
-        trace!("Received host call from {}, operation - {}", actor, op);
+        trace!("Handling operation `{}` from `{}`", op, actor);
 
         match op {
             OP_BIND_ACTOR if actor == SYSTEM_ACTOR => self.configure(deserialize(msg)?),
             OP_REMOVE_ACTOR if actor == SYSTEM_ACTOR => self.deconfigure(deserialize(msg)?),
+            OP_HEALTH_REQUEST if actor == SYSTEM_ACTOR => Ok(serialize(HealthCheckResponse {
+                healthy: true,
+                message: "".to_string(),
+            })?),
             OP_GET_CAPABILITY_DESCRIPTOR if actor == SYSTEM_ACTOR => self.get_descriptor(),
             OP_CLEAR => self.clear(actor),
             OP_UPDATE => self.update(actor, deserialize(msg)?),
             _ => Err("bad dispatch".into()),
         }
     }
+
+    fn stop(&self) {
+        // no clean-up needed
+    }
 }
 
 fn clear() -> Result<()> {
     let i2c = I2cdev::new("/dev/i2c-1")?;
     let interface = I2CDIBuilder::new().init(i2c);
-    let mut display: GraphicsMode<_> = Builder::new().connect(interface).into();
+    let mut display: GraphicsMode<_, _> = Builder::new().connect(interface).into();
 
     display
         .init()
@@ -164,7 +174,7 @@ fn clear() -> Result<()> {
 fn say(txt: &str) -> Result<()> {
     let i2c = I2cdev::new("/dev/i2c-1")?;
     let interface = I2CDIBuilder::new().init(i2c);
-    let mut display: GraphicsMode<_> = Builder::new().connect(interface).into();
+    let mut display: GraphicsMode<_, _> = Builder::new().connect(interface).into();
 
     display
         .init()

@@ -33,7 +33,6 @@ mod test {
     #[test]
     fn it_works() {
         Handlers::register_update(hr);
-        assert!(true);
     }
 
     fn hr(_req: String) -> HandlerResult<UpdateResponse> {

@@ -1,0 +1,11 @@
+[workspace]
+
+members = [
+  "oled_ssd1306_interface",
+  "oled_ssd1306_provider",
+]
+
+[profile.release]
+# Optimize for small code size
+lto = true
+opt-level = "s"
