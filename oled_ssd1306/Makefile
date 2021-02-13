@@ -19,9 +19,9 @@ $(TARGETS):
 
 .PHONY: par
 par: $(TARGETS)
-	cd build && wash par create \
+	cd target/aarch64-unknown-linux-gnu/release/ && wash par create \
 		--arch aarch64-linux \
-		--binary ../target/aarch64-unknown-linux-gnu/release/lib$(LIBNAME).so \
+		--binary lib$(LIBNAME).so \
 		--capid $(CAPABILITY_ID) \
 		--name $(NAME) \
 		--vendor $(VENDOR) \
@@ -34,16 +34,6 @@ par: $(TARGETS)
 codegen:
 	cd oled-ssd1306-interface && wapc generate codegen.yaml
 
-.PHONY: interface
-interface:
-	cargo build -p oled-ssd1306-interface --target wasm32-unknown-unknown --release
-	mkdir -p build && cp target/wasm32-unknown-unknown/release/*.wasm build/
-
 .PHONY: clean
 clean:
 	cargo clean
-	rm -Rf oled-ssd1306-interface/build
-
-.PHONY: test
-test: build
-	cargo -p oled-ssd1306-interface test

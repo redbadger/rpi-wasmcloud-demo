@@ -16,10 +16,10 @@ static_plugin = []
 [dependencies]
 anyhow = "1.0.38"
 embedded-graphics = "0.6.2"
-env_logger = "0.8.2"
+env_logger = "0.8.3"
 linux-embedded-hal = "0.3.0"
 log = "0.4.14"
 machine-ip = "0.2.1"
 ssd1306 = "0.5.1"
 wascc-codec = "0.9.0"
-wasmcloud-actor-core = {git = "https://github.com/wasmcloud/actor-interfaces", branch = "main"}
+wasmcloud-actor-core = "0.2.0"

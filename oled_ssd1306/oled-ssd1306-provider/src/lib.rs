@@ -5,12 +5,8 @@ extern crate log;
 
 use anyhow::{anyhow, Result};
 use codec::{
-    capabilities::{
-        CapabilityDescriptor, CapabilityProvider, Dispatcher, NullDispatcher, OperationDirection,
-        OP_GET_CAPABILITY_DESCRIPTOR,
-    },
-    core::{OP_BIND_ACTOR, OP_HEALTH_REQUEST, OP_REMOVE_ACTOR},
-    deserialize, serialize,
+    capabilities::{CapabilityProvider, Dispatcher, NullDispatcher},
+    core::{OP_BIND_ACTOR, OP_REMOVE_ACTOR},
 };
 use embedded_graphics::{
     fonts::{Font6x8, Text},
@@ -24,12 +20,11 @@ use std::{
     error::Error,
     sync::{Arc, RwLock},
 };
-use wasmcloud_actor_core::{CapabilityConfiguration, HealthCheckResponse};
+use wasmcloud_actor_core::{deserialize, CapabilityConfiguration};
 
 const SYSTEM_ACTOR: &str = "system";
+#[allow(unused)]
 const CAPABILITY_ID: &str = "red-badger:oled-ssd1306";
-const VERSION: &str = env!("CARGO_PKG_VERSION");
-const REVISION: u32 = 0; // Increment for each crates publish
 
 const OP_UPDATE: &str = "Update";
 const OP_CLEAR: &str = "Clear";
@@ -60,56 +55,26 @@ impl OledSsd1306Provider {
     fn configure(
         &self,
         _config: CapabilityConfiguration,
-    ) -> Result<Vec<u8>, Box<dyn Error + Sync + Send>> {
-        // Handle actor binding metadata here...
-        // This is typically where you would establish a
-        // client or connection to a resource on behalf of
-        // an actor
-        trace!("configure!");
-
+    ) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>> {
+        info!("configure!");
         Ok(vec![])
     }
 
     fn deconfigure(
         &self,
         _config: CapabilityConfiguration,
-    ) -> Result<Vec<u8>, Box<dyn Error + Sync + Send>> {
-        // Handle removal of resources claimed by an actor here
-        trace!("de-configure!");
-
+    ) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>> {
+        info!("de-configure!");
         Ok(vec![])
     }
 
-    // Capability providers must provide a descriptor to the host containing metadata and a list of supported operations
-    fn get_descriptor(&self) -> Result<Vec<u8>, Box<dyn Error + Sync + Send>> {
-        Ok(serialize(
-            CapabilityDescriptor::builder()
-                .id(CAPABILITY_ID)
-                .name("Red Badger OledSsd1306 Capability Provider") // TODO: change this friendly name
-                .long_description("An OLED SSD1306 capability provider for waSCC actors") // TODO: change this documentation
-                .version(VERSION)
-                .revision(REVISION)
-                .with_operation(
-                    OP_UPDATE,
-                    OperationDirection::ToProvider,
-                    "Updates text on the OLED display",
-                ) // TODO: make the operation descriptors match your real interface
-                .with_operation(
-                    OP_CLEAR,
-                    OperationDirection::ToProvider,
-                    "Clears the OLED display",
-                ) // TODO: make the operation descriptors match your real interface
-                .build(),
-        )?)
-    }
-
-    fn clear(&self, _actor: &str) -> Result<Vec<u8>, Box<dyn Error + Sync + Send>> {
+    fn clear(&self, _actor: &str) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>> {
         clear().map_err(|e| anyhow!("error writing to display: {:?}", e))?;
         Ok(vec![])
     }
 
-    fn update(&self, _actor: &str, txt: String) -> Result<Vec<u8>, Box<dyn Error + Sync + Send>> {
-        say(&txt).map_err(|e| anyhow!("error writing to display: {:?}", e))?;
+    fn update(&self, _actor: &str, msg: String) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>> {
+        say(&msg).map_err(|e| anyhow!("error writing to display: {:?}", e))?;
         Ok(vec![])
     }
 }
@@ -120,41 +85,31 @@ impl CapabilityProvider for OledSsd1306Provider {
     fn configure_dispatch(
         &self,
         dispatcher: Box<dyn Dispatcher>,
-    ) -> Result<(), Box<dyn Error + Sync + Send>> {
-        trace!("Dispatcher received.");
+    ) -> Result<(), Box<dyn Error + Send + Sync>> {
+        info!("Dispatcher received.");
         let mut lock = self.dispatcher.write().unwrap();
         *lock = dispatcher;
-
         Ok(())
     }
 
-    // Invoked by host runtime to allow an actor to make use of the capability
-    // All providers MUST handle the "configure" message, even if no work will be done
     fn handle_call(
         &self,
         actor: &str,
         op: &str,
         msg: &[u8],
-    ) -> Result<Vec<u8>, Box<dyn Error + Sync + Send>> {
-        trace!("Handling operation `{}` from `{}`", op, actor);
+    ) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>> {
+        info!("Handling operation `{}` from `{}`", op, actor);
 
         match op {
             OP_BIND_ACTOR if actor == SYSTEM_ACTOR => self.configure(deserialize(msg)?),
             OP_REMOVE_ACTOR if actor == SYSTEM_ACTOR => self.deconfigure(deserialize(msg)?),
-            OP_HEALTH_REQUEST if actor == SYSTEM_ACTOR => Ok(serialize(HealthCheckResponse {
-                healthy: true,
-                message: "".to_string(),
-            })?),
-            OP_GET_CAPABILITY_DESCRIPTOR if actor == SYSTEM_ACTOR => self.get_descriptor(),
             OP_CLEAR => self.clear(actor),
             OP_UPDATE => self.update(actor, deserialize(msg)?),
-            _ => Err("bad dispatch".into()),
+            _ => Err(format!("Unknown operation: {}", op).into()),
         }
     }
 
-    fn stop(&self) {
-        // no clean-up needed
-    }
+    fn stop(&self) {}
 }
 
 fn clear() -> Result<()> {
