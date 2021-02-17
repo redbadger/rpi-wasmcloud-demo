@@ -8,10 +8,12 @@ version = "0.0.1"
 crate-type = ["cdylib"]
 
 [dependencies]
+log = "0.4.14"
 oled-ssd1306-interface = {path = "../oled_ssd1306/oled-ssd1306-interface"}
 wapc-guest = "0.4.0"
-wasmcloud-actor-core = {git = "https://github.com/wascc/actor-interfaces", branch = "main", features = ["guest"]}
-wasmcloud-actor-http-server = {git = "https://github.com/wascc/actor-interfaces", branch = "main", features = ["guest"]}
+wasmcloud-actor-core = {version = "0.2.0", features = ["guest"]}
+wasmcloud-actor-http-server = {version = "0.1.0", features = ["guest"]}
+wasmcloud-actor-logging = {version = "0.1.0", features = ["guest"]}
 
 [profile.release]
 # Optimize for small code size

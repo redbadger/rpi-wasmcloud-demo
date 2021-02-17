@@ -10,6 +10,7 @@ build:
 	$(CARGO) build --target $(TARGET) --release
 	wash claims sign \
 		--http_server \
+		--logging \
 		--cap red-badger:oled-ssd1306 \
 		--name $(APP) \
 		$(OUT_DIR)/$(APP).wasm

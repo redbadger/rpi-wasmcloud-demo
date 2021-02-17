@@ -67,10 +67,12 @@ dependencies = [
 name = "oled_actor"
 version = "0.0.1"
 dependencies = [
+ "log",
  "oled-ssd1306-interface",
  "wapc-guest",
  "wasmcloud-actor-core",
  "wasmcloud-actor-http-server",
+ "wasmcloud-actor-logging",
 ]
 
 [[package]]
@@ -186,8 +188,9 @@ dependencies = [
 
 [[package]]
 name = "wasmcloud-actor-core"
-version = "0.2.0"
-source = "git+https://github.com/wascc/actor-interfaces?branch=main#114e9bd1f03618dd56d72247ec4ad9ec348bd9d5"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5eefb24f8d417f6bfafda30152de7e8c5ea169dc322dead873586e0fdff4b985"
 dependencies = [
  "lazy_static",
  "log",
@@ -200,8 +203,9 @@ dependencies = [
 
 [[package]]
 name = "wasmcloud-actor-http-server"
-version = "0.1.0"
-source = "git+https://github.com/wascc/actor-interfaces?branch=main#114e9bd1f03618dd56d72247ec4ad9ec348bd9d5"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "227c7455dc3912ea692f6d66fca07147cae7a721dae15486caea68fbbdf40454"
 dependencies = [
  "lazy_static",
  "log",
@@ -210,5 +214,19 @@ dependencies = [
  "serde_bytes",
  "serde_derive",
  "serde_json",
+ "wapc-guest",
+]
+
+[[package]]
+name = "wasmcloud-actor-logging"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e25b41da6aa9d05952ec35998163fb6e65232c99c5ed4827c778fdbf801993c5"
+dependencies = [
+ "lazy_static",
+ "log",
+ "rmp-serde",
+ "serde",
+ "serde_bytes",
  "wapc-guest",
 ]
