@@ -4,19 +4,19 @@ This is a demo of a WaSCC [lattice](https://wascc.dev/docs/lattice/overview/) ac
 
 > _A lattice is a seamless, distributed unit of compute that can self-form atop any combination of cloud, edge, and physical infrastructure._
 
-The lattice is made of two [WaSCC](https://wascc.dev/) nodes, one on the Mac and the other on the Pi.
+The lattice is made of two [wasmCloud](https://wasmcloud.dev/) nodes, one on the Mac and the other on the Pi.
 
 The Mac node hosts an HTTP server provider that forwards incoming requests to a sandboxed [WASM](https://webassembly.org/) actor, which can run on any node.
 
 The WASM actor contains our "business" logic. It is signed and only given permissions to talk with the HTTP server provider and the OLED provider. The latter is dynamically linked into the node running on the Raspberry Pi, where it natively controls an OLED display.
 
-![WaSCC lattice across Mac and Pi](./docs/wascc-lattice.svg)
+![wasmcloud lattice across Mac and Pi](./docs/wasmcloud-lattice.svg)
 
 ## The setup
 
 1. Raspberry Pi 4B, 8GB
 
-   1. Rust `1.50.0-nightly`
+   1. Rust `1.50`
    2. Rust Analyzer – `aarch64` builds are currently only available on nightly (`rustup component add rust-analyzer-preview`)
    3. I2C enabled in `sudo raspi-config`
 
@@ -50,61 +50,41 @@ The WASM actor contains our "business" logic. It is signed and only given permis
 
 ## Run it
 
-1. Clone this repo on both the Pi and your Mac.
-
-2. Find the IP address of your Mac:
+1. Find the IP address of your Mac:
 
    ```sh
    ipconfig getifaddr en0
    ```
 
-3. Connect VSCode to the Pi over SSH (_cmd-shift-P_ then `Remote-SSH: Connect to Host`) or connect over SSH with a terminal.
+2. Connect VSCode to the Pi over SSH (_cmd-shift-P_ then `Remote-SSH: Connect to Host`) or connect over SSH with a terminal.
+
+3. Install wasmCloud on Raspberry Pi 64bit
+
+   ```bash
+   # install rust toolchain
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+   # dev tools
+   sudo apt-get install libssl-dev clang-9
+
+   # wasmCloud
+   cargo install --git https://github.com/wasmcloud/wasmcloud --branch=main
+   ```
 
 4. On the Pi:
 
    ```sh
-   (cd pi_oled_provider && make)
-   (cd wasm_oled_actor && make)
-   (cd pi_host && make NATS_IP=192.168.121.180)  # set NATS_IP to the IP of your Mac (see step 2)
+   wasmcloud --control-host 192.168.2.1 --rpc-host 192.168.2.1 # set IP addresses to the IP of your Mac (see step 2)
    ```
 
 5. On the Mac:
 
    ```sh
-   (cd wasm_oled_actor && make)
-   (cd mac_host && make)
+   wasmcloud
+
+   # use wash cli to load actors and providers TODO
 
    # to test
-   curl -d 'Hello from WaSCC!' http://localhost:8081
+   curl -d 'Hello from wasmCloud!' http://localhost:8081
    curl -X DELETE http://localhost:8081
-   ```
-
-6. To run the actor on the Pi instead of the Mac:
-
-   ```sh
-   # on the Pi
-   (cd pi_host && make NATS_IP=192.168.121.180 ARGS=--actor)  # set NATS_IP to the IP of your Mac (see step 2)
-   # on the Mac
-   (cd mac_host && make ARGS=)
-
-   # to test
-   curl -d 'Hello from WaSCC!' http://localhost:8082
-   curl -X DELETE http://localhost:8082
-   ```
-
-7. To run actors on both the Pi and the Mac:
-
-   ```sh
-   # on the Pi
-   (cd pi_host && make NATS_IP=192.168.121.180 ARGS=--actor)  # set NATS_IP to the IP of your Mac (see step 2)
-   # on the Mac
-   (cd mac_host && make ARGS=--actor)
-
-   # to test actor on Mac
-   curl -d 'Hello from Mac!' http://localhost:8081
-   curl -X DELETE http://localhost:8081
-
-   # to test actor on Pi
-   curl -d 'Hello from Pi!' http://localhost:8082
-   curl -X DELETE http://localhost:8082
    ```
