@@ -1,6 +1,7 @@
 #![allow(clippy::unnecessary_wraps)]
 
 use log::info;
+use serde_json::json;
 use wapc_guest::prelude::*;
 use wasmcloud_actor_core as core;
 use wasmcloud_actor_http_server as http;
@@ -16,14 +17,14 @@ pub fn wapc_init() {
 fn handler(payload: http::Request) -> HandlerResult<http::Response> {
     match payload.method.as_ref() {
         "POST" => {
-            info!("POST incoming");
             let txt = String::from_utf8(payload.body)?;
             info!("received text: {}", txt);
             match oled_ssd1306_interface::default().update(txt) {
                 Ok(_) => Ok(http::Response::ok()),
                 Err(e) => {
                     info!("update display error: {:?}", e);
-                    Err(e)
+                    let result = json!({ "error": e.to_string() });
+                    Ok(http::Response::json(&result, 500, "Server Error"))
                 }
             }
         }

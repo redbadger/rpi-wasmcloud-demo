@@ -24,3 +24,4 @@
 
 mod generated;
 pub use generated::*;
+pub const CONTRACT: &str = "red-badger:oled-ssd1306";

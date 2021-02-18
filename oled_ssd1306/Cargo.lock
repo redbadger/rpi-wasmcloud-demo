@@ -297,6 +297,7 @@ dependencies = [
  "linux-embedded-hal",
  "log",
  "machine-ip",
+ "oled-ssd1306-interface",
  "ssd1306",
  "wascc-codec",
  "wasmcloud-actor-core",
@@ -574,9 +575,9 @@ dependencies = [
 
 [[package]]
 name = "wascc-codec"
-version = "0.9.0"
+version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6a9727b42ad2569e7d535b050c269cf6e01cf9a6b272346965db17b7af03120b"
+checksum = "b9d0eb428da03b436c8bc7eaad4a384650e4296ba45e6a49bfe908e3047eff7a"
 dependencies = [
  "rmp-serde 0.14.4",
  "serde",
@@ -587,9 +588,9 @@ dependencies = [
 
 [[package]]
 name = "wasmcloud-actor-core"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ff971d364ca6611edd9d02994e77d5cbbaf421f487fd4b3aab81a554f171410"
+checksum = "5eefb24f8d417f6bfafda30152de7e8c5ea169dc322dead873586e0fdff4b985"
 dependencies = [
  "lazy_static",
  "log",

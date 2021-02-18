@@ -69,6 +69,7 @@ version = "0.0.1"
 dependencies = [
  "log",
  "oled-ssd1306-interface",
+ "serde_json",
  "wapc-guest",
  "wasmcloud-actor-core",
  "wasmcloud-actor-http-server",

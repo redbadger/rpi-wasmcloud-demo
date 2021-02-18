@@ -6,7 +6,7 @@ extern crate log;
 use anyhow::{anyhow, Result};
 use codec::{
     capabilities::{CapabilityProvider, Dispatcher, NullDispatcher},
-    core::{OP_BIND_ACTOR, OP_REMOVE_ACTOR},
+    core::{OP_BIND_ACTOR, OP_HEALTH_REQUEST, OP_REMOVE_ACTOR},
 };
 use embedded_graphics::{
     fonts::{Font6x8, Text},
@@ -15,16 +15,13 @@ use embedded_graphics::{
     style::TextStyleBuilder,
 };
 use linux_embedded_hal::I2cdev;
+use oled_ssd1306_interface::{ClearArgs, UpdateArgs, UpdateResponse};
 use ssd1306::{prelude::*, Builder, I2CDIBuilder};
 use std::{
     error::Error,
     sync::{Arc, RwLock},
 };
-use wasmcloud_actor_core::{deserialize, CapabilityConfiguration};
-
-const SYSTEM_ACTOR: &str = "system";
-#[allow(unused)]
-const CAPABILITY_ID: &str = "red-badger:oled-ssd1306";
+use wasmcloud_actor_core::{deserialize, serialize, CapabilityConfiguration, HealthCheckResponse};
 
 const OP_UPDATE: &str = "Update";
 const OP_CLEAR: &str = "Clear";
@@ -52,30 +49,22 @@ impl OledSsd1306Provider {
         Self::default()
     }
 
-    fn configure(
+    fn clear(
         &self,
-        _config: CapabilityConfiguration,
+        _actor: &str,
+        _msg: ClearArgs,
     ) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>> {
-        info!("configure!");
-        Ok(vec![])
-    }
-
-    fn deconfigure(
-        &self,
-        _config: CapabilityConfiguration,
-    ) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>> {
-        info!("de-configure!");
-        Ok(vec![])
-    }
-
-    fn clear(&self, _actor: &str) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>> {
         clear().map_err(|e| anyhow!("error writing to display: {:?}", e))?;
-        Ok(vec![])
+        Ok(serialize(&UpdateResponse { success: true })?)
     }
 
-    fn update(&self, _actor: &str, msg: String) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>> {
-        say(&msg).map_err(|e| anyhow!("error writing to display: {:?}", e))?;
-        Ok(vec![])
+    fn update(
+        &self,
+        _actor: &str,
+        msg: UpdateArgs,
+    ) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>> {
+        say(&msg.txt).map_err(|e| anyhow!("error writing to display: {:?}", e))?;
+        Ok(serialize(&UpdateResponse { success: true })?)
     }
 }
 
@@ -101,11 +90,25 @@ impl CapabilityProvider for OledSsd1306Provider {
         info!("Handling operation `{}` from `{}`", op, actor);
 
         match op {
-            OP_BIND_ACTOR if actor == SYSTEM_ACTOR => self.configure(deserialize(msg)?),
-            OP_REMOVE_ACTOR if actor == SYSTEM_ACTOR => self.deconfigure(deserialize(msg)?),
-            OP_CLEAR => self.clear(actor),
-            OP_UPDATE => self.update(actor, deserialize(msg)?),
-            _ => Err(format!("Unknown operation: {}", op).into()),
+            OP_BIND_ACTOR if actor == "system" => {
+                // Provision per-actor resources here
+                Ok(vec![])
+            }
+            OP_REMOVE_ACTOR if actor == "system" => {
+                let config = deserialize::<CapabilityConfiguration>(msg)?;
+                info!("Removing actor configuration for {}", config.module);
+                // Clean up per-actor resources here
+                Ok(vec![])
+            }
+            OP_HEALTH_REQUEST if actor == "system" => Ok(serialize(HealthCheckResponse {
+                healthy: true,
+                message: "".to_string(),
+            })?),
+
+            // contract-specific handlers
+            OP_CLEAR => self.clear(actor, deserialize(&msg)?),
+            OP_UPDATE => self.update(actor, deserialize(&msg)?),
+            _ => Err(format!("Unsupported operation `{}`", op).into()),
         }
     }
 

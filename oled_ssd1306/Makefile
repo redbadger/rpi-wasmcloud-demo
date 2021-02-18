@@ -1,13 +1,8 @@
-CONST_FILE := oled-ssd1306-provider/src/lib.rs
-define readvar
-$(or $(shell sed -nE 's/^.*$(1).*"(.*)";$$/\1/p' $(CONST_FILE)),$(error "Cannot find variable $(1)"))
-endef
-
-CAPABILITY_ID := $(call readvar,CAPABILITY_ID)
+VENDOR        ?= red-badger
+CAPABILITY_ID := $(VENDOR):oled-ssd1306
 NAME          := $(shell cargo metadata --no-deps --format-version 1 | jq -r '.packages[1].name')
 VERSION       := $(shell cargo metadata --no-deps --format-version 1 | jq -r '.packages[1].version')
 LIBNAME       := $(shell echo $(NAME) | tr '-' '_')
-VENDOR        ?= red-badger
 REVISION	  ?= 0
 DESTINATION   ?= $(NAME).par.gz
 

@@ -4,16 +4,22 @@ use serde::{Deserialize, Serialize};
 use std::io::Cursor;
 
 extern crate log;
+#[cfg(feature = "guest")]
 extern crate wapc_guest as guest;
+#[cfg(feature = "guest")]
 use guest::prelude::*;
 
+#[cfg(feature = "guest")]
 use lazy_static::lazy_static;
+#[cfg(feature = "guest")]
 use std::sync::RwLock;
 
+#[cfg(feature = "guest")]
 pub struct Host {
     binding: String,
 }
 
+#[cfg(feature = "guest")]
 impl Default for Host {
     fn default() -> Self {
         Host {
@@ -23,6 +29,7 @@ impl Default for Host {
 }
 
 /// Creates a named host binding
+#[cfg(feature = "guest")]
 pub fn host(binding: &str) -> Host {
     Host {
         binding: binding.to_string(),
@@ -30,10 +37,12 @@ pub fn host(binding: &str) -> Host {
 }
 
 /// Creates the default host binding
+#[cfg(feature = "guest")]
 pub fn default() -> Host {
     Host::default()
 }
 
+#[cfg(feature = "guest")]
 impl Host {
     pub fn update(&self, txt: String) -> HandlerResult<UpdateResponse> {
         let input_args = UpdateArgs { txt };
@@ -66,8 +75,10 @@ impl Host {
     }
 }
 
+#[cfg(feature = "guest")]
 pub struct Handlers {}
 
+#[cfg(feature = "guest")]
 impl Handlers {
     pub fn register_update(f: fn(String) -> HandlerResult<UpdateResponse>) {
         *UPDATE.write().unwrap() = Some(f);
@@ -79,12 +90,14 @@ impl Handlers {
     }
 }
 
+#[cfg(feature = "guest")]
 lazy_static! {
     static ref UPDATE: RwLock<Option<fn(String) -> HandlerResult<UpdateResponse>>> =
         RwLock::new(None);
     static ref CLEAR: RwLock<Option<fn() -> HandlerResult<UpdateResponse>>> = RwLock::new(None);
 }
 
+#[cfg(feature = "guest")]
 fn update_wrapper(input_payload: &[u8]) -> CallResult {
     let input = deserialize::<UpdateArgs>(input_payload)?;
     let lock = UPDATE.read().unwrap().unwrap();
@@ -92,6 +105,7 @@ fn update_wrapper(input_payload: &[u8]) -> CallResult {
     Ok(serialize(result)?)
 }
 
+#[cfg(feature = "guest")]
 fn clear_wrapper(input_payload: &[u8]) -> CallResult {
     let _input = deserialize::<ClearArgs>(input_payload)?;
     let lock = CLEAR.read().unwrap().unwrap();
