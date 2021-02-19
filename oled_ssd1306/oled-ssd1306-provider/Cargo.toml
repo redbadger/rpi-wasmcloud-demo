@@ -1,0 +1,26 @@
+[package]
+authors = ["Stuart Harris <stuart.harris@red-badger.com>"]
+description = "OLED provider for ssd1306"
+edition = "2018"
+license = "MIT"
+name = "oled-ssd1306-provider"
+version = "0.1.0"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# Enable if the provider will be statically compiled into a host
+static_plugin = []
+
+[dependencies]
+anyhow = "1.0.38"
+embedded-graphics = "0.6.2"
+env_logger = "0.8.3"
+linux-embedded-hal = "0.3.0"
+log = "0.4.14"
+machine-ip = "0.2.1"
+oled-ssd1306-interface = {path = "../oled-ssd1306-interface"}
+ssd1306 = "0.5.1"
+wascc-codec = "0.9.0"
+wasmcloud-actor-core = "0.2.0"

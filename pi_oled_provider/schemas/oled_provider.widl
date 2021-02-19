@@ -1,9 +1,0 @@
-namespace "red-badger:oled-ssd1306"
-
-interface {
-    Update(txt: string): UpdateResponse
-}
-
-type UpdateResponse {
-    success: bool
-}
