@@ -1,10 +1,10 @@
-# Raspberry Pi wasmCloud Demo
+# Raspberry Pi wasmcloud Demo
 
-This is a demo of a wasmCloud [lattice](https://www.wasmcloud.dev/reference/lattice) running across an Apple MacBook Pro and 2 x Raspberry Pi 4B.
+This is a demo of a wasmcloud [lattice](https://www.wasmcloud.dev/reference/lattice) running across an Apple MacBook Pro and 2 x Raspberry Pi 4B.
 
 > _A lattice is a seamless, distributed unit of compute that can self-form atop any combination of cloud, edge, and physical infrastructure._
 
-The lattice is made of three [wasmCloud](https://wasmcloud.dev/) nodes, one on the Mac and one on each Pi.
+In this example, the lattice is made of three [wasmcloud](https://wasmcloud.dev/) nodes, one on the Mac and one on each Pi. However it would work just as well with one Pi, simply collapse `pi_01` and `pi_02` together as you go.
 
 The Mac node hosts an HTTP server provider that forwards incoming requests to a sandboxed [WASM](https://webassembly.org/) actor, which can run on any node, but in our case runs on `pi_02`.
 
@@ -56,7 +56,7 @@ The WASM actor contains our "business" logic. It is signed and only given permis
    ipconfig getifaddr en0
    ```
 
-2. Install wasmCloud on Raspberry Pi 64bit debian:
+2. Install wasmcloud on Raspberry Pi 64bit debian:
 
    ```bash
    # install rust toolchain
@@ -65,8 +65,8 @@ The WASM actor contains our "business" logic. It is signed and only given permis
    # dev tools
    sudo apt-get install libssl-dev clang-9
 
-   # wasmCloud
-   cargo install --git https://github.com/wasmcloud/wasmcloud --branch=main
+   # wasmcloud
+   cargo install --force --git https://github.com/wasmcloud/wasmcloud --tag=v0.15.0
    ```
 
 3. On each Pi:
@@ -95,7 +95,7 @@ The WASM actor contains our "business" logic. It is signed and only given permis
    ./scripts/start.sh
 
    # to test
-   curl -d 'Hello from wasmCloud!' http://localhost:8081
+   curl -d 'Hello from wasmcloud!' http://localhost:8081
    curl -X DELETE http://localhost:8081
    ```
 
