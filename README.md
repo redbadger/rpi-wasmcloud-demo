@@ -63,7 +63,7 @@ The WASM actor contains our "business" logic. It is signed and only given permis
    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
    # dev tools
-   sudo apt-get install libssl-dev clang-9
+   sudo apt install libssl-dev libclang-dev clang-9
 
    # wasmcloud
    cargo install --force --git https://github.com/wasmcloud/wasmcloud --tag=v0.15.0
