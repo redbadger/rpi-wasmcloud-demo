@@ -17,10 +17,10 @@ use std::{
     error::Error,
     sync::{Arc, RwLock},
 };
-use wasmcloud_actor_core::{deserialize, serialize, CapabilityConfiguration, HealthCheckResponse};
+use wasmcloud_actor_core::{CapabilityConfiguration, HealthCheckResponse};
 use wasmcloud_provider_core::{
-    core::{OP_BIND_ACTOR, OP_HEALTH_REQUEST, OP_REMOVE_ACTOR},
-    CapabilityProvider, Dispatcher, NullDispatcher,
+    core::{OP_BIND_ACTOR, OP_HEALTH_REQUEST, OP_REMOVE_ACTOR, SYSTEM_ACTOR},
+    deserialize, serialize, CapabilityProvider, Dispatcher, NullDispatcher,
 };
 
 const OP_UPDATE: &str = "Update";
@@ -90,20 +90,19 @@ impl CapabilityProvider for OledSsd1306Provider {
         info!("Handling operation `{}` from `{}`", op, actor);
 
         match op {
-            OP_BIND_ACTOR if actor == "system" => {
+            OP_BIND_ACTOR if actor == SYSTEM_ACTOR => {
                 // Provision per-actor resources here
                 Ok(vec![])
             }
-            OP_REMOVE_ACTOR if actor == "system" => {
+            OP_REMOVE_ACTOR if actor == SYSTEM_ACTOR => {
                 let config = deserialize::<CapabilityConfiguration>(msg)?;
                 info!("Removing actor configuration for {}", config.module);
                 // Clean up per-actor resources here
                 Ok(vec![])
             }
-            OP_HEALTH_REQUEST if actor == "system" => Ok(serialize(HealthCheckResponse {
-                healthy: true,
-                message: "".to_string(),
-            })?),
+            OP_HEALTH_REQUEST if actor == SYSTEM_ACTOR => {
+                Ok(serialize(HealthCheckResponse::healthy())?)
+            }
 
             // contract-specific handlers
             OP_CLEAR => self.clear(actor, deserialize(&msg)?),
