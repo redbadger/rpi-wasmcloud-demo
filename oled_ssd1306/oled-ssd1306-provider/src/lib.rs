@@ -1,13 +1,9 @@
 #[macro_use]
-extern crate wascc_codec as codec;
+extern crate wasmcloud_provider_core;
 #[macro_use]
 extern crate log;
 
 use anyhow::{anyhow, Result};
-use codec::{
-    capabilities::{CapabilityProvider, Dispatcher, NullDispatcher},
-    core::{OP_BIND_ACTOR, OP_HEALTH_REQUEST, OP_REMOVE_ACTOR},
-};
 use embedded_graphics::{
     fonts::{Font6x8, Text},
     pixelcolor::BinaryColor,
@@ -22,6 +18,10 @@ use std::{
     sync::{Arc, RwLock},
 };
 use wasmcloud_actor_core::{deserialize, serialize, CapabilityConfiguration, HealthCheckResponse};
+use wasmcloud_provider_core::{
+    core::{OP_BIND_ACTOR, OP_HEALTH_REQUEST, OP_REMOVE_ACTOR},
+    CapabilityProvider, Dispatcher, NullDispatcher,
+};
 
 const OP_UPDATE: &str = "Update";
 const OP_CLEAR: &str = "Clear";

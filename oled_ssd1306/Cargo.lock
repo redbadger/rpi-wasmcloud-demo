@@ -61,9 +61,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.0.66"
+version = "1.0.67"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4c0496836a84f8d0495758516b8621a622beb77c0fed418570e50764093ced48"
+checksum = "e3c69b077ad434294d3ce9f1f6143a2a4b89a8a2d54ef813d85003a4fd1137fd"
 
 [[package]]
 name = "cfg-if"
@@ -281,7 +281,7 @@ version = "0.0.1"
 dependencies = [
  "lazy_static",
  "log",
- "rmp-serde 0.15.4",
+ "rmp-serde",
  "serde",
  "serde_bytes",
  "wapc-guest",
@@ -299,15 +299,15 @@ dependencies = [
  "machine-ip",
  "oled-ssd1306-interface",
  "ssd1306",
- "wascc-codec",
  "wasmcloud-actor-core",
+ "wasmcloud-provider-core",
 ]
 
 [[package]]
 name = "once_cell"
-version = "1.5.2"
+version = "1.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13bd41f508810a131401606d54ac32a467c97172d74ba7662562ebba5ad07fa0"
+checksum = "10acf907b94fc1b1a152d08ef97e7759650268cf986bf127f387e602b02c7e5a"
 
 [[package]]
 name = "proc-macro2"
@@ -353,17 +353,6 @@ checksum = "4f55e5fa1446c4d5dd1f5daeed2a4fe193071771a2636274d0d7a3b082aa7ad6"
 dependencies = [
  "byteorder",
  "num-traits",
-]
-
-[[package]]
-name = "rmp-serde"
-version = "0.14.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ce7d70c926fe472aed493b902010bccc17fa9f7284145cb8772fd22fdb052d8"
-dependencies = [
- "byteorder",
- "rmp",
- "serde",
 ]
 
 [[package]]
@@ -438,9 +427,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.62"
+version = "1.0.63"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea1c6153794552ea7cf7cf63b1231a25de00ec90db326ba6264440fa08e31486"
+checksum = "43535db9747a4ba938c0ce0a98cc631a46ebf943c9e1d604e091df6007620bf6"
 dependencies = [
  "itoa",
  "ryu",
@@ -470,9 +459,9 @@ dependencies = [
 
 [[package]]
 name = "spidev"
-version = "0.4.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aa5aa93a87c20f4efdf494917ef8fb475522601256ba6bb00ad1e6101f779fe9"
+checksum = "83d6d2546cfabc5769643fc2a430d6ef811342329a338d1a892c7d52c587890e"
 dependencies = [
  "bitflags",
  "libc",
@@ -574,29 +563,29 @@ dependencies = [
 ]
 
 [[package]]
-name = "wascc-codec"
-version = "0.9.1"
+name = "wasmcloud-actor-core"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9d0eb428da03b436c8bc7eaad4a384650e4296ba45e6a49bfe908e3047eff7a"
+checksum = "3db490c15579b0c070db4cd548e4b0ebf344d5ced172d092971f07791b67b161"
 dependencies = [
- "rmp-serde 0.14.4",
+ "lazy_static",
+ "log",
+ "rmp-serde",
  "serde",
  "serde_bytes",
- "serde_derive",
  "serde_json",
 ]
 
 [[package]]
-name = "wasmcloud-actor-core"
-version = "0.2.1"
+name = "wasmcloud-provider-core"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5eefb24f8d417f6bfafda30152de7e8c5ea169dc322dead873586e0fdff4b985"
+checksum = "91e3e67ed5e93b76aebbfb4ac46531da81930c244ee2d08f754a26cf472d15e6"
 dependencies = [
- "lazy_static",
- "log",
- "rmp-serde 0.15.4",
+ "rmp-serde",
  "serde",
  "serde_bytes",
+ "serde_derive",
  "serde_json",
 ]
 
