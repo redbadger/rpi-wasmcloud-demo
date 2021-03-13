@@ -46,7 +46,37 @@ The WASM actor contains our "business" logic. It is signed and only given permis
 
    ```sh
    cargo install wash-cli --force
+
+   # or
+   brew tap wasmcloud/wasmcloud
+   brew install wasmcloud wash
    ```
+
+## Build
+
+Build the actor and the provider and push them to an OCI registry.
+
+### `oled_ssd1306`
+
+```sh
+cd oled_ssd1306
+
+make par
+
+# note: set username, password and registry in this command before running
+wash reg push -u username -p password redbadger.azurecr.io/oled_ssd1306_provider:0.0.1 target/aarch64-unknown-linux-gnu/release/oled-ssd1306-provider.par.gz
+```
+
+### `oled_actor`
+
+```sh
+cd oled_actor
+
+make
+
+# note: set username, password and registry in this command before running
+wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./target/wasm32-unknown-unknown/release/oled_actor_s.wasm
+```
 
 ## Run it
 
@@ -66,15 +96,15 @@ The WASM actor contains our "business" logic. It is signed and only given permis
    sudo apt install libssl-dev libclang-dev clang-9
 
    # wasmcloud
-   cargo install --force --git https://github.com/wasmcloud/wasmcloud --tag=v0.15.0
+   cargo install --force --git https://github.com/wasmcloud/wasmcloud --tag=v0.15.3 wasmcloud
    ```
 
 3. On each Pi:
 
    ```sh
-   export OCI_REGISTRY_USER=redbadger # set your OCI registry username
+   export OCI_REGISTRY_USER=username # set your OCI registry username
    export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
-   wasmcloud --control-host 192.168.2.1 --rpc-host 192.168.2.1 # set IP addresses to the IP of your Mac (see step 2)
+   wasmcloud --control-host 192.168.2.1 --rpc-host 192.168.2.1 # set IP addresses to the IP of your Mac (see step 1)
    ```
 
 4. On the Mac:
