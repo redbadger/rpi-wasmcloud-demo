@@ -83,7 +83,7 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
 1. Find the IP address of your Mac:
 
    ```sh
-   ipconfig getifaddr en0
+   ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p'
    ```
 
 2. Install wasmcloud on Raspberry Pi 64bit debian:
@@ -99,7 +99,7 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
    cargo install --force --git https://github.com/wasmcloud/wasmcloud --tag=v0.15.3 wasmcloud
    ```
 
-3. On each Pi:
+3. On `HOST_PI_01`:
 
    ```sh
    export OCI_REGISTRY_USER=username # set your OCI registry username
@@ -107,7 +107,7 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
    wasmcloud --control-host 192.168.2.1 --rpc-host 192.168.2.1 # set IP addresses to the IP of your Mac (see step 1)
    ```
 
-4. On the Mac:
+4. On `HOST_MAC`:
 
    ```sh
    wasmcloud
