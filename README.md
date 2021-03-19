@@ -104,10 +104,20 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
    ```sh
    export OCI_REGISTRY_USER=username # set your OCI registry username
    export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
-   wasmcloud --control-host 192.168.2.1 --rpc-host 192.168.2.1 # set IP addresses to the IP of your Mac (see step 1)
+   export NATS_IP=192.168.121.141 # set your NATS server IP address
+   wasmcloud --control-host $NATS_IP --rpc-host $NATS_IP --allow-live-updates --manifest manifests/pi-01.yaml
    ```
 
-4. On `HOST_MAC`:
+4. On `HOST_PI_02`:
+
+   ```sh
+   export OCI_REGISTRY_USER=username # set your OCI registry username
+   export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
+   export NATS_IP=192.168.121.141 # set your NATS server IP address
+   wasmcloud --control-host $NATS_IP --rpc-host $NATS_IP --allow-live-updates --manifest manifests/pi-02.yaml
+   ```
+
+5. On `HOST_MAC`:
 
    ```sh
    wasmcloud
@@ -116,12 +126,6 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
    Then in another shell:
 
    ```sh
-   wash ctl get hosts
-
-   export HOST_MAC=NCHA34XXHEUURNNC6FMFYVBFCXST5HA2QVTRZ6IESIJCAJIM5XMLGASW # replace with ID of wasmcloud instance on MAC
-   export HOST_PI_01=NCZ7Q2DBXKEAIU56LGWT47X3RC73TYFJODAOKLT2CRI5ZENTQF64NXMB # replace with ID of wasmcloud instance on PI_01
-   export HOST_PI_02=NDFSZQM4DJGQJHMNOC3RIYXJ5J5YD64CIXVS3ER4UX23GJQQWDS3IGOG # replace with ID of wasmcloud instance on PI_02
-
    ./scripts/start.sh
 
    # to test
