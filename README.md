@@ -6,13 +6,13 @@ This is a demo of a wasmcloud [lattice](https://www.wasmcloud.dev/reference/latt
 
 In this example, the lattice is made of three [wasmcloud](https://wasmcloud.dev/) nodes, one on the Mac and one on each Pi. However it would work just as well with one Pi, simply collapse `pi_01` and `pi_02` together as you go.
 
-The Mac node hosts an HTTP server provider that forwards incoming requests to a sandboxed [WASM](https://webassembly.org/) actor, which can run on any node, but in our case runs on `pi_02`.
+The Mac node hosts the wasmcloud [HTTP server provider](https://github.com/wasmCloud/capability-providers) that forwards incoming requests to our sandboxed [WASM](https://webassembly.org/) actor, which can run on any node, but in our case runs on `pi_02`. The Mac node also hosts the wasmcloud [Logging provider](https://github.com/wasmCloud/capability-providers), which the actor uses to log to `stdout`.
 
-The WASM actor contains our "business" logic. It is signed and only given permissions to talk with the HTTP server provider and the OLED provider. The latter is dynamically linked at runtime into the node running on `pi_01`, where it natively controls an OLED display.
+The WASM actor contains our "business" logic. It is signed and only given permissions to talk with the HTTP server provider, the Logging provider and the OLED provider. The OLED provider is dynamically linked at runtime into the node running on `pi_01`, where it natively controls an OLED display.
 
 ![wasmcloud lattice across Mac and Pi](./docs/wasmcloud-lattice.svg)
 
-## The setup
+## Setup
 
 1. Raspberry Pi 4B, 8GB
 
@@ -78,7 +78,7 @@ make
 wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./target/wasm32-unknown-unknown/release/oled_actor_s.wasm
 ```
 
-## Run it
+## Run
 
 1. Find the IP address of your Mac:
 
@@ -95,32 +95,36 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
    # dev tools
    sudo apt install libssl-dev libclang-dev clang-9
 
-   # wasmcloud
-   cargo install --force --git https://github.com/wasmcloud/wasmcloud --tag=v0.15.3 wasmcloud
+   # wasmcloud (need `main` branch until 0.15.4 is released, in order to use `--label`)
+   cargo install --force --git https://github.com/wasmcloud/wasmcloud --branch=main wasmcloud
    ```
 
-3. On `pi_01`, the Pi with the OLED display:
+3. On `pi_01` (the Pi with the OLED display):
+
+   Note, that the environment variable `KVCACHE_NATS_URL` is also used by the default KV cache provider, to share the cache between nodes.
 
    ```sh
    export OCI_REGISTRY_USER=username # set your OCI registry username
    export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
-   export NATS_IP=192.168.121.141 # set your NATS server IP address
-   wasmcloud --control-host $NATS_IP --rpc-host $NATS_IP --allow-live-updates --manifest manifests/pi-01.yaml
+   export KVCACHE_NATS_URL=192.168.121.141 # set your NATS server IP address from step 1
+   wasmcloud --control-host $KVCACHE_NATS_URL --rpc-host $KVCACHE_NATS_URL --allow-live-updates --label name=pi-01
    ```
 
-4. On `pi_02`, the other Pi:
+4. On `pi_02` (the other Pi):
 
    ```sh
    export OCI_REGISTRY_USER=username # set your OCI registry username
    export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
-   export NATS_IP=192.168.121.141 # set your NATS server IP address
-   wasmcloud --control-host $NATS_IP --rpc-host $NATS_IP --allow-live-updates --manifest manifests/pi-02.yaml
+   export KVCACHE_NATS_URL=192.168.121.141 # set your NATS server IP address from step 1
+   wasmcloud --control-host $KVCACHE_NATS_URL --rpc-host $KVCACHE_NATS_URL --allow-live-updates --label name=pi-02
    ```
 
 5. On `MacOS`:
 
+   Note that `RUST_LOG=info` is needed for the Logging provider (which our actor uses to log to `stdout`).
+
    ```sh
-   RUST_LOG=info wasmcloud
+   KVCACHE_NATS_URL=0.0.0.0 RUST_LOG=info wasmcloud
    ```
 
    Then in another shell:
