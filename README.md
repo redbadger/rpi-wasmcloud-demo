@@ -99,7 +99,7 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
    cargo install --force --git https://github.com/wasmcloud/wasmcloud --tag=v0.15.3 wasmcloud
    ```
 
-3. On `HOST_PI_01`:
+3. On `pi_01`, the Pi with the OLED display:
 
    ```sh
    export OCI_REGISTRY_USER=username # set your OCI registry username
@@ -108,7 +108,7 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
    wasmcloud --control-host $NATS_IP --rpc-host $NATS_IP --allow-live-updates --manifest manifests/pi-01.yaml
    ```
 
-4. On `HOST_PI_02`:
+4. On `pi_02`, the other Pi:
 
    ```sh
    export OCI_REGISTRY_USER=username # set your OCI registry username
@@ -117,10 +117,10 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
    wasmcloud --control-host $NATS_IP --rpc-host $NATS_IP --allow-live-updates --manifest manifests/pi-02.yaml
    ```
 
-5. On `HOST_MAC`:
+5. On `MacOS`:
 
    ```sh
-   wasmcloud
+   RUST_LOG=info wasmcloud
    ```
 
    Then in another shell:
