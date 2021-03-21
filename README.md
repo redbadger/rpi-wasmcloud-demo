@@ -133,8 +133,8 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
    ./scripts/start.sh
 
    # to test
-   curl -d 'Hello from wasmcloud!' http://localhost:8081
-   curl -X DELETE http://localhost:8081
+   curl -d 'Hello from wasmcloud!' http://127.0.0.1:8081
+   curl -X DELETE http://127.0.0.1:8081
    ```
 
 ![Photo of setup](docs/wasmcloud.jpg)

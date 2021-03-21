@@ -1,7 +1,6 @@
 #![allow(clippy::unnecessary_wraps)]
 
 use log::info;
-use serde_json::json;
 use wapc_guest::HandlerResult;
 use wasmcloud_actor_core as core;
 use wasmcloud_actor_http_server as http;
@@ -18,23 +17,29 @@ fn handler(request: http::Request) -> HandlerResult<http::Response> {
     match request.method.as_ref() {
         "POST" => {
             let txt = String::from_utf8(request.body)?;
-            info!("received text: {}", txt);
-            match oled_ssd1306_interface::default().update(txt) {
-                Ok(_) => Ok(http::Response::ok()),
-                Err(e) => {
-                    info!("update display error: {:?}", e);
-                    let result = json!({ "error": e.to_string() });
-                    Ok(http::Response::json(&result, 500, "Server Error"))
-                }
-            }
+            info!("updating display with: {}", txt);
+            oled_ssd1306_interface::default()
+                .update(txt)
+                .map(|_| http::Response::ok())
+                .or_else(|e| {
+                    info!("error updating display: {:?}", e);
+                    Ok(http::Response::internal_server_error(
+                        "There was a problem updating the display",
+                    ))
+                })
         }
-        "DELETE" => match oled_ssd1306_interface::default().clear() {
-            Ok(_) => Ok(http::Response::ok()),
-            Err(e) => {
-                info!("update display error: {:?}", e);
-                Err(e)
-            }
-        },
+        "DELETE" => {
+            info!("clearing display");
+            oled_ssd1306_interface::default()
+                .clear()
+                .map(|_| http::Response::ok())
+                .or_else(|e| {
+                    info!("error clearing display: {:?}", e);
+                    Ok(http::Response::internal_server_error(
+                        "There was a problem clearing the display",
+                    ))
+                })
+        }
         _ => Ok(http::Response::bad_request()),
     }
 }
