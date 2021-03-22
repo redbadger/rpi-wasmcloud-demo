@@ -9,6 +9,7 @@ OUT_DIR = target/$(TARGET)/release
 build:
 	$(CARGO) build --target $(TARGET) --release
 	wash claims sign \
+		--extras \
 		--http_server \
 		--logging \
 		--cap red-badger:oled-ssd1306 \

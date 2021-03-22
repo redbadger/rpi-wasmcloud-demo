@@ -67,10 +67,12 @@ dependencies = [
 name = "oled_actor"
 version = "0.0.1"
 dependencies = [
+ "lazy_static",
  "log",
  "oled-ssd1306-interface",
  "wapc-guest",
  "wasmcloud-actor-core",
+ "wasmcloud-actor-extras",
  "wasmcloud-actor-http-server",
  "wasmcloud-actor-logging",
 ]
@@ -211,6 +213,21 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "wasmcloud-actor-extras"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "873979fdcc2eb9497026855968c5ff568401836c19b131eb27017c7224edd155"
+dependencies = [
+ "lazy_static",
+ "log",
+ "rmp-serde",
+ "serde",
+ "serde_bytes",
+ "serde_derive",
+ "wapc-guest",
 ]
 
 [[package]]

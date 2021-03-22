@@ -1,8 +1,12 @@
 #![allow(clippy::unnecessary_wraps)]
 
+#[macro_use]
+extern crate lazy_static;
+
 use log::info;
 use wapc_guest::HandlerResult;
 use wasmcloud_actor_core as core;
+use wasmcloud_actor_extras as extras;
 use wasmcloud_actor_http_server as http;
 use wasmcloud_actor_logging as logging;
 
@@ -14,10 +18,17 @@ pub fn wapc_init() {
 }
 
 fn handler(request: http::Request) -> HandlerResult<http::Response> {
+    lazy_static! {
+        static ref ID: String = extras::default()
+            .request_guid()
+            .unwrap_or_else(|e| Some(format!("{:?}", e)))
+            .unwrap_or_else(|| "unknown-guid".to_string());
+    }
+
     match request.method.as_ref() {
         "POST" => {
             let txt = String::from_utf8(request.body)?;
-            info!("updating display with: {}", txt);
+            info!("{}: updating display with: {}", ID.as_str(), txt);
             oled_ssd1306_interface::default()
                 .update(txt)
                 .map(|_| http::Response::ok())
@@ -29,7 +40,7 @@ fn handler(request: http::Request) -> HandlerResult<http::Response> {
                 })
         }
         "DELETE" => {
-            info!("clearing display");
+            info!("{}: clearing display", ID.as_str());
             oled_ssd1306_interface::default()
                 .clear()
                 .map(|_| http::Response::ok())
