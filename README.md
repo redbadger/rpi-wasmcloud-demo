@@ -6,9 +6,11 @@ This is a demo of a wasmcloud [lattice](https://www.wasmcloud.dev/reference/latt
 
 In this example, the lattice is made of three [wasmcloud](https://wasmcloud.dev/) nodes, one on the Mac and one on each Pi. However it would work just as well with one Pi, simply collapse `pi_01` and `pi_02` together as you go.
 
-The Mac node hosts the wasmcloud [HTTP server provider](https://github.com/wasmCloud/capability-providers) that forwards incoming requests to our sandboxed [WASM](https://webassembly.org/) actor, which can run on any node, but in our case runs on `pi_02`. The Mac node also hosts the wasmcloud [Logging provider](https://github.com/wasmCloud/capability-providers), which the actor uses to log to `stdout`.
+The Mac node hosts the wasmcloud [HTTP Server provider](https://github.com/wasmCloud/capability-providers) that forwards incoming requests to our sandboxed [WASM](https://webassembly.org/) actor, which can run on any node, but in the diagram runs on `pi_02`. (The [start script](./scripts/start.sh) actually asks for 2 instances of the actor — one will be scheduled on each Pi node — and each actor instance logs a unique uuid so we can see in the host logs how requests are load balanced between the 2 actors.)
 
-The WASM actor contains our "business" logic. It is signed and only given permissions to talk with the HTTP server provider, the Logging provider and the OLED provider. The OLED provider is dynamically linked at runtime into the node running on `pi_01`, where it natively controls an OLED display.
+The Mac node also hosts the wasmcloud [Logging provider](https://github.com/wasmCloud/capability-providers), which the actor uses to log to `stdout`.
+
+The WASM actor contains our "business" logic. It is signed and only given permissions to talk with the HTTP Server provider, the Logging provider and the OLED provider. The OLED provider is dynamically linked at runtime into the node running on `pi_01`, where it natively controls an OLED display.
 
 ![wasmcloud lattice across Mac and Pi](./docs/wasmcloud-lattice.svg)
 
@@ -16,7 +18,7 @@ The WASM actor contains our "business" logic. It is signed and only given permis
 
 1. Raspberry Pi 4B, 8GB
 
-   1. Rust `1.50`
+   1. Rust stable
    2. Rust Analyzer – `aarch64` builds are currently only available on nightly (`rustup component add rust-analyzer-preview`)
    3. I2C enabled in `sudo raspi-config`
 
@@ -95,13 +97,13 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
    # dev tools
    sudo apt install libssl-dev libclang-dev clang-9
 
-   # wasmcloud (need `main` branch until 0.15.4 is released, in order to use `--label`)
-   cargo install --force --git https://github.com/wasmcloud/wasmcloud --branch=main wasmcloud
+   # wasmcloud
+   cargo install --force --git https://github.com/wasmcloud/wasmcloud --tag=v0.15.5 wasmcloud
    ```
 
 3. On `pi_01` (the Pi with the OLED display):
 
-   Note, that the environment variable `KVCACHE_NATS_URL` is also used by the default KV cache provider, to share the cache between nodes.
+   The environment variable `KVCACHE_NATS_URL` is also used by the default KV cache provider, to share the cache between nodes.
 
    ```sh
    export OCI_REGISTRY_USER=username # set your OCI registry username
@@ -121,7 +123,7 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
 
 5. On `MacOS`:
 
-   Note that `RUST_LOG=info` is needed for the Logging provider (which our actor uses to log to `stdout`).
+   `RUST_LOG=info` is needed for the Logging provider (which our actor uses to log to `stdout`).
 
    ```sh
    KVCACHE_NATS_URL=0.0.0.0 RUST_LOG=info wasmcloud
