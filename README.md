@@ -6,7 +6,7 @@ This is a demo of a wasmcloud [lattice](https://www.wasmcloud.dev/reference/latt
 
 In this example, the lattice is made of three [wasmcloud](https://wasmcloud.dev/) nodes, one on the Mac and one on each Pi. However it would work just as well with one Pi, simply collapse `pi_01` and `pi_02` together as you go.
 
-The Mac node hosts the wasmcloud [HTTP Server provider](https://github.com/wasmCloud/capability-providers) that forwards incoming requests to our sandboxed [WASM](https://webassembly.org/) actor, which can run on any node, but in the diagram runs on `pi_02`. (The [start script](./scripts/start.sh) actually asks for 2 instances of the actor — one will be scheduled on each Pi node — and each actor instance logs a unique uuid so we can see in the host logs how requests are load balanced between the 2 actors.)
+The Mac node hosts the wasmcloud [HTTP Server provider](https://github.com/wasmCloud/capability-providers) that forwards incoming requests to our sandboxed [WASM](https://webassembly.org/) actor, which can run on any node, but in this demo runs on `pi_02`.
 
 The Mac node also hosts the wasmcloud [Logging provider](https://github.com/wasmCloud/capability-providers), which the actor uses to log to `stdout`.
 
@@ -129,7 +129,9 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
    KVCACHE_NATS_URL=0.0.0.0 RUST_LOG=info wasmcloud
    ```
 
-   Then in another shell:
+   There is a [start script](./scripts/start.sh), which starts providers and actors, and links them together.
+
+   (You can actually run more than one instance of the actor — each will be scheduled on a free node — and each actor instance logs a unique uuid so we can see in the host logs how requests are load balanced between each of the actors.)
 
    ```sh
    ./scripts/start.sh

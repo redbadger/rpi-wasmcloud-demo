@@ -13,7 +13,6 @@ wash ctl start provider wasmcloud.azurecr.io/httpserver:0.11.1 --constraint "hos
 wash ctl start provider wasmcloud.azurecr.io/logging:0.9.1 --constraint "hostcore.os=macos"
 
 wash ctl start actor redbadger.azurecr.io/oled_actor:0.0.1 --constraint "hostcore.arch=aarch64"
-wash ctl start actor redbadger.azurecr.io/oled_actor:0.0.1 --constraint "hostcore.arch=aarch64"
 
 wash ctl link $ACTOR $PROVIDER_EXTRAS wasmcloud:extras
 wash ctl link $ACTOR $PROVIDER_HTTP wasmcloud:httpserver PORT=8081
