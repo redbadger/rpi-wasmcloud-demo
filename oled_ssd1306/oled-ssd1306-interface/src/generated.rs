@@ -1,18 +1,23 @@
+extern crate log;
 extern crate rmp_serde as rmps;
+
 use rmps::{Deserializer, Serializer};
 use serde::{Deserialize, Serialize};
 use std::io::Cursor;
-
-extern crate log;
-#[cfg(feature = "guest")]
-extern crate wapc_guest as guest;
-#[cfg(feature = "guest")]
-use guest::prelude::*;
 
 #[cfg(feature = "guest")]
 use lazy_static::lazy_static;
 #[cfg(feature = "guest")]
 use std::sync::RwLock;
+#[cfg(feature = "guest")]
+use wapc_guest::prelude::*;
+
+#[cfg(feature = "guest")]
+type UpdateResult = HandlerResult<UpdateResponse>;
+#[cfg(feature = "guest")]
+type UpdateFunction = fn(String) -> UpdateResult;
+#[cfg(feature = "guest")]
+type ClearFunction = fn() -> UpdateResult;
 
 #[cfg(feature = "guest")]
 pub struct Host {
@@ -44,7 +49,7 @@ pub fn default() -> Host {
 
 #[cfg(feature = "guest")]
 impl Host {
-    pub fn update(&self, txt: String) -> HandlerResult<UpdateResponse> {
+    pub fn update(&self, txt: String) -> UpdateResult {
         let input_args = UpdateArgs { txt };
         host_call(
             &self.binding,
@@ -56,10 +61,9 @@ impl Host {
             let resp = deserialize::<UpdateResponse>(vec.as_ref()).unwrap();
             resp
         })
-        .map_err(|e| e.into())
     }
 
-    pub fn clear(&self) -> HandlerResult<UpdateResponse> {
+    pub fn clear(&self) -> UpdateResult {
         let input_args = ClearArgs {};
         host_call(
             &self.binding,
@@ -71,7 +75,6 @@ impl Host {
             let resp = deserialize::<UpdateResponse>(vec.as_ref()).unwrap();
             resp
         })
-        .map_err(|e| e.into())
     }
 }
 
@@ -80,11 +83,11 @@ pub struct Handlers {}
 
 #[cfg(feature = "guest")]
 impl Handlers {
-    pub fn register_update(f: fn(String) -> HandlerResult<UpdateResponse>) {
+    pub fn register_update(f: UpdateFunction) {
         *UPDATE.write().unwrap() = Some(f);
         register_function(&"Update", update_wrapper);
     }
-    pub fn register_clear(f: fn() -> HandlerResult<UpdateResponse>) {
+    pub fn register_clear(f: ClearFunction) {
         *CLEAR.write().unwrap() = Some(f);
         register_function(&"Clear", clear_wrapper);
     }
@@ -92,9 +95,8 @@ impl Handlers {
 
 #[cfg(feature = "guest")]
 lazy_static! {
-    static ref UPDATE: RwLock<Option<fn(String) -> HandlerResult<UpdateResponse>>> =
-        RwLock::new(None);
-    static ref CLEAR: RwLock<Option<fn() -> HandlerResult<UpdateResponse>>> = RwLock::new(None);
+    static ref UPDATE: RwLock<Option<UpdateFunction>> = RwLock::new(None);
+    static ref CLEAR: RwLock<Option<ClearFunction>> = RwLock::new(None);
 }
 
 #[cfg(feature = "guest")]
