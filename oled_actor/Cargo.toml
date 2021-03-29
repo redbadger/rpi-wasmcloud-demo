@@ -17,6 +17,9 @@ wasmcloud-actor-extras = {version = "0.1.1", features = ["guest"]}
 wasmcloud-actor-http-server = {version = "0.1.1", features = ["guest"]}
 wasmcloud-actor-logging = {version = "0.1.1", features = ["guest"]}
 
+[profile.dev]
+split-debuginfo = "unpacked"
+
 [profile.release]
 # Optimize for small code size
 lto = true

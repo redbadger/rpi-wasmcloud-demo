@@ -104,7 +104,7 @@ fn update_wrapper(input_payload: &[u8]) -> CallResult {
     let input = deserialize::<UpdateArgs>(input_payload)?;
     let lock = UPDATE.read().unwrap().unwrap();
     let result = lock(input.txt)?;
-    Ok(serialize(result)?)
+    serialize(result)
 }
 
 #[cfg(feature = "guest")]
@@ -112,7 +112,7 @@ fn clear_wrapper(input_payload: &[u8]) -> CallResult {
     let _input = deserialize::<ClearArgs>(input_payload)?;
     let lock = CLEAR.read().unwrap().unwrap();
     let result = lock()?;
-    Ok(serialize(result)?)
+    serialize(result)
 }
 
 #[derive(Debug, PartialEq, Deserialize, Serialize, Default, Clone)]

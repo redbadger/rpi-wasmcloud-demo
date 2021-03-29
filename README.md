@@ -44,10 +44,11 @@ The WASM actor contains our "business" logic. It is signed and only given permis
    1. [Remote SSH](https://code.visualstudio.com/docs/remote/ssh) - useful for writing code directly on a Pi.
    2. [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer) - essential :-)
 
-5. [`wash`](https://github.com/wascc/wash) cli installed on the Mac:
+5. wasmcloud and [`wash`](https://github.com/wascc/wash) installed on the Mac:
 
    ```sh
-   cargo install wash-cli --force
+   cargo install --git https://github.com/wasmcloud/wasmcloud --tag=v0.16.0 wasmcloud
+   cargo install wash-cli
 
    # or
    brew tap wasmcloud/wasmcloud
@@ -98,7 +99,7 @@ wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./ta
    sudo apt install libssl-dev libclang-dev clang-9
 
    # wasmcloud
-   cargo install --force --git https://github.com/wasmcloud/wasmcloud --tag=v0.15.5 wasmcloud
+   cargo install --git https://github.com/wasmcloud/wasmcloud --tag=v0.16.0 wasmcloud
    ```
 
 3. On `pi_01` (the Pi with the OLED display):

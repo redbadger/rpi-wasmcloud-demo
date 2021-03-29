@@ -11,9 +11,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.39"
+version = "1.0.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81cddc5f91628367664cc7c69714ff08deee8a3efc54623011c772544d7b2767"
+checksum = "28b2cd92db5cbd74e8e5028f7e27dd7aa3090e89e4f2a197cc7c8dfb69c7063b"
 
 [[package]]
 name = "atty"
@@ -477,9 +477,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.64"
+version = "1.0.65"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3fd9d1e9976102a03c542daa2eff1b43f9d72306342f3f8b3ed5fb8908195d6f"
+checksum = "f3a1d708c221c5a612956ef9f75b37e454e88d1f7b899fbd3a18d4252012d663"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -562,15 +562,13 @@ dependencies = [
 
 [[package]]
 name = "wasmcloud-provider-core"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91e3e67ed5e93b76aebbfb4ac46531da81930c244ee2d08f754a26cf472d15e6"
+checksum = "d0b8685026259ab32e67bd1aed0c8eb04f15717e9da8b2b262d8bf460cfc2dbc"
 dependencies = [
  "rmp-serde",
  "serde",
- "serde_bytes",
  "serde_derive",
- "serde_json",
 ]
 
 [[package]]
