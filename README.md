@@ -64,10 +64,12 @@ Build the actor and the provider and push them to an OCI registry.
 ```sh
 cd oled_ssd1306
 
-make par
+make
 
-# note: set username, password and registry in this command before running
-wash reg push -u username -p password redbadger.azurecr.io/oled_ssd1306_provider:0.0.1 target/aarch64-unknown-linux-gnu/release/oled-ssd1306-provider.par.gz
+export REGISTRY=redbadger.azurecr.io # set your OCI registry
+export OCI_REGISTRY_USER=username # set your OCI registry username
+export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
+make push
 ```
 
 ### `oled_actor`
@@ -77,8 +79,10 @@ cd oled_actor
 
 make
 
-# note: set username, password and registry in this command before running
-wash reg push -u username -p password redbadger.azurecr.io/oled_actor:0.0.1 ./target/wasm32-unknown-unknown/release/oled_actor_s.wasm
+export REGISTRY=redbadger.azurecr.io # set your OCI registry
+export OCI_REGISTRY_USER=username # set your OCI registry username
+export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
+make push
 ```
 
 ## Run
