@@ -1,19 +1,16 @@
-#![allow(clippy::unnecessary_wraps)]
-
 #[macro_use]
 extern crate lazy_static;
+extern crate wasmcloud_actor_core as actor;
 
 use log::info;
 use wapc_guest::HandlerResult;
-use wasmcloud_actor_core as core;
 use wasmcloud_actor_extras as extras;
 use wasmcloud_actor_http_server as http;
 use wasmcloud_actor_logging as logging;
 
-#[no_mangle]
-pub fn wapc_init() {
+#[actor::init]
+pub fn init() {
     http::Handlers::register_handle_request(handler);
-    core::Handlers::register_health_request(health);
     logging::enable_macros();
 }
 
@@ -53,8 +50,4 @@ fn handler(request: http::Request) -> HandlerResult<http::Response> {
         }
         _ => Ok(http::Response::bad_request()),
     }
-}
-
-fn health(_request: core::HealthCheckRequest) -> HandlerResult<core::HealthCheckResponse> {
-    Ok(core::HealthCheckResponse::healthy())
 }
