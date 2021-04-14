@@ -47,7 +47,7 @@ The WASM actor contains our "business" logic. It is signed and only given permis
 5. wasmcloud and [`wash`](https://github.com/wascc/wash) installed on the Mac:
 
    ```sh
-   cargo install --git https://github.com/wasmcloud/wasmcloud --tag=v0.16.0 wasmcloud
+   cargo install --git https://github.com/wasmcloud/wasmcloud --tag=v0.16.1 wasmcloud
    cargo install wash-cli
 
    # or
@@ -93,7 +93,13 @@ make push
    ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p'
    ```
 
-2. Install wasmcloud on Raspberry Pi 64bit debian:
+2. Install wasmcloud on MacOS:
+
+   ```bash
+   cargo install wasmcloud
+   ```
+
+3. Install wasmcloud on Raspberry Pi 64bit debian:
 
    ```bash
    # install rust toolchain
@@ -103,30 +109,30 @@ make push
    sudo apt install libssl-dev libclang-dev clang-9
 
    # wasmcloud
-   cargo install --git https://github.com/wasmcloud/wasmcloud --tag=v0.16.0 wasmcloud
+   cargo install wasmcloud
    ```
 
-3. On `pi_01` (the Pi with the OLED display):
+4. On `pi_01` (the Pi with the OLED display):
 
    The environment variable `KVCACHE_NATS_URL` is also used by the default KV cache provider, to share the cache between nodes.
 
    ```sh
    export OCI_REGISTRY_USER=username # set your OCI registry username
    export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
-   export KVCACHE_NATS_URL=192.168.121.141 # set your NATS server IP address from step 1
+   export KVCACHE_NATS_URL=192.168.0.238 # set your NATS server IP address from step 1
    wasmcloud --control-host $KVCACHE_NATS_URL --rpc-host $KVCACHE_NATS_URL --allow-live-updates --label name=pi-01
    ```
 
-4. On `pi_02` (the other Pi):
+5. On `pi_02` (the other Pi):
 
    ```sh
    export OCI_REGISTRY_USER=username # set your OCI registry username
    export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
-   export KVCACHE_NATS_URL=192.168.121.141 # set your NATS server IP address from step 1
+   export KVCACHE_NATS_URL=192.168.0.238 # set your NATS server IP address from step 1
    wasmcloud --control-host $KVCACHE_NATS_URL --rpc-host $KVCACHE_NATS_URL --allow-live-updates --label name=pi-02
    ```
 
-5. On `MacOS`:
+6. On `MacOS`:
 
    `RUST_LOG=info` is needed for the Logging provider (which our actor uses to log to `stdout`).
 
