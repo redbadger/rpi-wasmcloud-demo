@@ -16,11 +16,12 @@ static_plugin = []
 [dependencies]
 anyhow = "1.0.40"
 embedded-graphics = "0.6.2"
+embedded-text = "0.4.0"
 env_logger = "0.8.3"
 linux-embedded-hal = "0.3.0"
 log = "0.4.14"
 machine-ip = "0.2.1"
 oled-ssd1306-interface = {path = "../oled-ssd1306-interface"}
-ssd1306 = "0.5.1"
-wasmcloud-actor-core = "0.2.2"
+ssd1306 = "0.5.2"
+wasmcloud-actor-core = "0.2.3"
 wasmcloud-provider-core = "0.1.1"

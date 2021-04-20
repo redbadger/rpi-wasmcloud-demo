@@ -3,16 +3,11 @@ extern crate wasmcloud_provider_core;
 #[macro_use]
 extern crate log;
 
+mod say;
+
 use anyhow::{anyhow, Result};
-use embedded_graphics::{
-    fonts::{Font6x8, Text},
-    pixelcolor::BinaryColor,
-    prelude::*,
-    style::TextStyleBuilder,
-};
-use linux_embedded_hal::I2cdev;
 use oled_ssd1306_interface::{ClearArgs, UpdateArgs, UpdateResponse};
-use ssd1306::{prelude::*, Builder, I2CDIBuilder};
+use say::say;
 use std::{
     error::Error,
     sync::{Arc, RwLock},
@@ -54,7 +49,7 @@ impl OledSsd1306Provider {
         _actor: &str,
         _msg: ClearArgs,
     ) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>> {
-        clear().map_err(|e| anyhow!("error writing to display: {:?}", e))?;
+        say("").map_err(|e| anyhow!("error writing to display: {:?}", e))?;
         Ok(serialize(&UpdateResponse { success: true })?)
     }
 
@@ -75,7 +70,7 @@ impl CapabilityProvider for OledSsd1306Provider {
         &self,
         dispatcher: Box<dyn Dispatcher>,
     ) -> Result<(), Box<dyn Error + Send + Sync>> {
-        info!("Dispatcher received.");
+        info!("Dispatcher configured.");
         let mut lock = self.dispatcher.write().unwrap();
         *lock = dispatcher;
         Ok(())
@@ -112,41 +107,4 @@ impl CapabilityProvider for OledSsd1306Provider {
     }
 
     fn stop(&self) {}
-}
-
-fn clear() -> Result<()> {
-    let i2c = I2cdev::new("/dev/i2c-1")?;
-    let interface = I2CDIBuilder::new().init(i2c);
-    let mut display: GraphicsMode<_, _> = Builder::new().connect(interface).into();
-
-    display
-        .init()
-        .map_err(|_| anyhow!("error initializing display"))?;
-
-    display
-        .flush()
-        .map_err(|_| anyhow!("error flushing display"))
-}
-
-fn say(txt: &str) -> Result<()> {
-    let i2c = I2cdev::new("/dev/i2c-1")?;
-    let interface = I2CDIBuilder::new().init(i2c);
-    let mut display: GraphicsMode<_, _> = Builder::new().connect(interface).into();
-
-    display
-        .init()
-        .map_err(|_| anyhow!("error initializing display"))?;
-
-    let text_style = TextStyleBuilder::new(Font6x8)
-        .text_color(BinaryColor::On)
-        .build();
-
-    Text::new(txt, Point::new(0, 0))
-        .into_styled(text_style)
-        .draw(&mut display)
-        .map_err(|_| anyhow!("error writing text"))?;
-
-    display
-        .flush()
-        .map_err(|_| anyhow!("error flushing display"))
 }

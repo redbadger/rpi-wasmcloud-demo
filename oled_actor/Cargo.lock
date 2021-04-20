@@ -190,9 +190,9 @@ dependencies = [
 
 [[package]]
 name = "wasmcloud-actor-core"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3db490c15579b0c070db4cd548e4b0ebf344d5ced172d092971f07791b67b161"
+checksum = "36ef1e944f088a7203b2fd2d1a21030b315ae915839b0bed482d674dcd36c108"
 dependencies = [
  "lazy_static",
  "log",
@@ -217,12 +217,11 @@ dependencies = [
 
 [[package]]
 name = "wasmcloud-actor-extras"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "873979fdcc2eb9497026855968c5ff568401836c19b131eb27017c7224edd155"
+checksum = "361fa326d332f86fef8c0605e0346dfe76728cf470ec2a3e1a5515ea97d29391"
 dependencies = [
  "lazy_static",
- "log",
  "rmp-serde",
  "serde",
  "serde_bytes",
@@ -232,25 +231,23 @@ dependencies = [
 
 [[package]]
 name = "wasmcloud-actor-http-server"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "227c7455dc3912ea692f6d66fca07147cae7a721dae15486caea68fbbdf40454"
+checksum = "e3475f57d2e71bc35c61081062794906bb328da6420d7d42ecfb2da926db0dd9"
 dependencies = [
  "lazy_static",
- "log",
  "rmp-serde",
  "serde",
  "serde_bytes",
- "serde_derive",
  "serde_json",
  "wapc-guest",
 ]
 
 [[package]]
 name = "wasmcloud-actor-logging"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e25b41da6aa9d05952ec35998163fb6e65232c99c5ed4827c778fdbf801993c5"
+checksum = "220d368da04838697fc7e4239273c99aa2c41a5cd6586973df9ca9965f14db01"
 dependencies = [
  "lazy_static",
  "log",

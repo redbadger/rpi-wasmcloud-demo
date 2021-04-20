@@ -18,8 +18,7 @@ fn handler(request: http::Request) -> HandlerResult<http::Response> {
     lazy_static! {
         static ref ID: String = extras::default()
             .request_guid()
-            .unwrap_or_else(|e| Some(format!("{:?}", e)))
-            .unwrap_or_else(|| "unknown-guid".to_string());
+            .unwrap_or_else(|e| format!("{:?}", e));
     }
 
     match request.method.as_ref() {

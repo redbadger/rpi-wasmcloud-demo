@@ -47,12 +47,7 @@ The WASM actor contains our "business" logic. It is signed and only given permis
 5. wasmcloud and [`wash`](https://github.com/wascc/wash) installed on the Mac:
 
    ```sh
-   cargo install --git https://github.com/wasmcloud/wasmcloud --tag=v0.16.1 wasmcloud
-   cargo install wash-cli
-
-   # or
-   brew tap wasmcloud/wasmcloud
-   brew install wasmcloud wash
+   cargo install wasmcloud wash-cli
    ```
 
 ## Build
