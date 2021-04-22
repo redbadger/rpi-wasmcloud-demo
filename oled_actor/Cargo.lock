@@ -164,9 +164,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.69"
+version = "1.0.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48fe99c6bd8b1cc636890bcc071842de909d902c81ac7dab53ba33c421ab8ffb"
+checksum = "b9505f307c872bab8eb46f77ae357c8eba1fdacead58ee5a850116b1d7f82883"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -217,11 +217,12 @@ dependencies = [
 
 [[package]]
 name = "wasmcloud-actor-extras"
-version = "0.1.2"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "361fa326d332f86fef8c0605e0346dfe76728cf470ec2a3e1a5515ea97d29391"
+checksum = "873979fdcc2eb9497026855968c5ff568401836c19b131eb27017c7224edd155"
 dependencies = [
  "lazy_static",
+ "log",
  "rmp-serde",
  "serde",
  "serde_bytes",

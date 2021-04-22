@@ -13,7 +13,7 @@ log = "0.4.14"
 oled-ssd1306-interface = {path = "../oled_ssd1306/oled-ssd1306-interface", features = ["guest"]}
 wapc-guest = "0.4.0"
 wasmcloud-actor-core = {version = "0.2.3", features = ["guest"]}
-wasmcloud-actor-extras = {version = "0.1.2", features = ["guest"]}
+wasmcloud-actor-extras = {version = "=0.1.1", features = ["guest"]}# locked at 0.1.1 until wasmcloud is updated
 wasmcloud-actor-http-server = {version = "0.1.2", features = ["guest"]}
 wasmcloud-actor-logging = {version = "0.1.2", features = ["guest"]}
 
