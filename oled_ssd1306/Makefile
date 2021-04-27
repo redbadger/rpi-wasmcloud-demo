@@ -16,7 +16,8 @@ $(TARGETS):
 
 .PHONY: par
 par: $(TARGETS)
-	cd target/aarch64-unknown-linux-gnu/release/ && wash par create \
+	cd target/aarch64-unknown-linux-gnu/release/ \
+	&& wash par create \
 		--arch aarch64-linux \
 		--binary lib$(LIBNAME).so \
 		--capid $(CAPABILITY_ID) \

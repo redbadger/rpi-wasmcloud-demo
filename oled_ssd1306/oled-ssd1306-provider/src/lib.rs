@@ -3,11 +3,11 @@ extern crate wasmcloud_provider_core;
 #[macro_use]
 extern crate log;
 
-mod say;
+mod display;
 
 use anyhow::{anyhow, Result};
+use display::say;
 use oled_ssd1306_interface::{ClearArgs, UpdateArgs, UpdateResponse};
-use say::say;
 use std::{
     error::Error,
     sync::{Arc, RwLock},
