@@ -1,11 +1,41 @@
-[workspace]
+[package]
+edition = "2018"
+license = "MIT"
+name = "oled-ssd1306-provider"
+resolver = "2"
+version = "0.1.0"
 
-members = [
-  "oled-ssd1306-interface",
-  "oled-ssd1306-provider",
-]
+[dependencies]
+anyhow = "1.0.44"
+async-trait = "0.1.51"
+base64 = "0.13.0"
+bytes = "1.1.0"
+chrono = "0.4.19"
+crossbeam = "0.8.1"
+futures = "0.3.17"
+log = "0.4.14"
+oled-ssd1306-interface = {path = "interface/rust"}
+once_cell = "1.8.0"
+reqwest = "0.11.5"
+rmp-serde = "0.15.5"
+serde = {version = "1.0.130", features = ["derive"]}
+serde_bytes = "0.11.5"
+serde_json = "1.0.68"
+thiserror = "1.0.30"
+tokio = {version = "1.12.0", features = ["full"]}
+toml = "0.5.8"
+wasmbus-rpc = "0.4.4"
 
-[profile.release]
-# Optimize for small code size
-lto = true
-opt-level = "s"
+[target.'cfg(target_arch = "aarch64")'.dependencies]
+embedded-graphics = "0.7.1"
+embedded-text = "0.5.0"
+linux-embedded-hal = "0.3.1"
+ssd1306 = "0.7.0"
+
+# test dependencies
+[dev-dependencies]
+wasmcloud-test-util = "0.1.7"
+
+[[bin]]
+name = "oled-ssd1306-provider"
+path = "src/main.rs"

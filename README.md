@@ -18,9 +18,30 @@ The WASM actor contains our "business" logic. It is signed and only given permis
 
 1. Raspberry Pi 4B, 8GB
 
-   1. Rust stable
-   2. Rust Analyzer – `aarch64` builds are currently only available on nightly (`rustup component add rust-analyzer-preview`)
-   3. I2C enabled in `sudo raspi-config`
+   1. I2C enabled in `sudo raspi-config`
+   2. install Rust stable
+   3. install Rust Analyzer – `aarch64` builds are currently only available on nightly (`rustup component add rust-analyzer-preview`)
+   4. install Elixir
+
+      ```bash
+      echo "deb https://packages.erlang-solutions.com/debian buster contrib" \
+         | sudo tee /etc/apt/sources.list.d/erlang-solutions.list
+
+      wget https://packages.erlang-solutions.com/debian/erlang_solutions.asc \
+         && sudo apt-key add erlang_solutions.asc \
+         && rm erlang_solutions.asc
+
+      sudo apt update
+      sudo apt install erlang-parsetools erlang-dev elixir
+      ```
+
+   5. clone the `wasmcloud-otp` repo, then build `wasmcloud_host`
+
+      ```bash
+      git clone git@github.com:wasmCloud/wasmcloud-otp.git
+      cd wasmcloud-otp/wasmcloud_host
+      make build
+      ```
 
 2. OLED display with SSD1306 display driver
 
@@ -32,11 +53,29 @@ The WASM actor contains our "business" logic. It is signed and only given permis
       3. `SCL` - pin 5
       4. `SDA` - pin 3
 
-3. NATS server on the Mac:
+3. run NATS server, wasmcloud, redis and a local OCI registry, using Docker Compose, on the Mac:
 
    ```sh
-   brew install nats-server
-   brew services start nats-server
+   docker-compose up -d
+
+   # if using `lima` and `containerd` (note you may need to install `vde_vmnet` as per https://github.com/lima-vm/lima/blob/master/docs/network.md to allow access to NATS from other machines)
+   lima nerdctl compose up -d
+   ```
+
+   Note the cluster seed and cluster signer keys and add to `~/wasmcloud-otp/wasmcloud_host/.env` files on each Pi. The `.env` files should look like the following, with the keys added.
+
+   ```bash
+   WASMCLOUD_CLUSTER_SEED=
+   CLUSTER_SIGNER=
+   WASMCLOUD_RPC_HOST=192.168.0.238
+   WASMCLOUD_CTL_HOST=192.168.0.238
+   WASMCLOUD_OCI_ALLOWED_INSECURE=192.168.0.238
+   ```
+
+   Run the wasmCloud host on each Pi:
+
+   ```bash
+   (cd ~/wasmcloud-otp/wasmcloud_host && make run)
    ```
 
 4. VSCode with these extensions
@@ -44,10 +83,11 @@ The WASM actor contains our "business" logic. It is signed and only given permis
    1. [Remote SSH](https://code.visualstudio.com/docs/remote/ssh) - useful for writing code directly on a Pi.
    2. [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer) - essential :-)
 
-5. wasmcloud and [`wash`](https://github.com/wascc/wash) installed on the Mac:
+5. install `wash` on the Mac:
 
    ```sh
-   cargo install wasmcloud wash-cli
+   brew tap wasmcloud/wasmcloud
+   brew install wash
    ```
 
 ## Build

@@ -1,41 +1,22 @@
-VENDOR ?= red-badger
-CAPABILITY_ID := $(VENDOR):oled-ssd1306
+# Makefile for oled_actor
 
-COLOR ?= always # Valid COLOR options: {always, auto, never}
-CARGO = cargo --color $(COLOR)
-NAME := $(shell cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].name')
-VERSION := $(shell cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
-TARGET = wasm32-unknown-unknown
-OUT_DIR = target/$(TARGET)/release
+PROJECT  = oled_actor
+VERSION  = $(shell cargo metadata --no-deps --format-version 1 | jq -r '.packages[] .version' | head -1)
+REVISION = 0
+# list of all contract claims for actor signing (space-separated)
+CLAIMS = \
+	red-badger:oled-ssd1306 \
+	wasmcloud:builtins:logging \
+	wasmcloud:builtins:numbergen \
+	wasmcloud:httpserver
+# registry url for our actor
+REG_URL  = localhost:5000/v2/$(PROJECT):$(VERSION)
+# command to upload to registry (without last wasm parameter)
+PUSH_REG_CMD = wash reg push --insecure $(REG_URL)
 
-.PHONY: build push clean
+# friendly name for the actor
+ACTOR_NAME = "oled_actor"
+# optional call alias for actor
+# ACTOR_ALIAS=nickname
 
-build:
-	$(CARGO) build --target $(TARGET) --release
-	wash claims sign \
-		--extras \
-		--http_server \
-		--logging \
-		--cap $(CAPABILITY_ID) \
-		--name $(NAME) \
-		$(OUT_DIR)/$(NAME).wasm
-	wash claims inspect $(OUT_DIR)/$(NAME)_s.wasm
-
-push: guard-OCI_REGISTRY_USER guard-OCI_REGISTRY_PASSWORD guard-REGISTRY
-	wash reg push \
-		-u $(OCI_REGISTRY_USER) \
-		-p $(OCI_REGISTRY_PASSWORD) \
-		$(REGISTRY)/$(NAME):$(VERSION) \
-		$(OUT_DIR)/$(NAME)_s.wasm
-
-# Rust builds accrue disk space over time (specifically the target directory),
-# so running `make clean` should be done periodically.
-clean:
-	cargo clean
-	rm -Rf build
-
-guard-%: GUARD
-	@ if [ -z '${${*}}' ]; then echo 'Environment variable $* not set.' && exit 1; fi
-
-.PHONY: GUARD
-GUARD:
+include ./actor.mk
