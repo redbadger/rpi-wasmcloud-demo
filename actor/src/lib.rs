@@ -1,12 +1,12 @@
-#[macro_use]
-extern crate lazy_static;
-use async_once::AsyncOnce;
 use oled_ssd1306_interface::{Oled, OledSender, Request};
+use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use wasmbus_rpc::actor::prelude::*;
 use wasmcloud_interface_httpserver::{HttpRequest, HttpResponse, HttpServer, HttpServerReceiver};
 use wasmcloud_interface_logging::{info, warn};
-use wasmcloud_interface_numbergen::generate_guid;
+use wasmcloud_interface_numbergen::{NumberGen, NumberGenSender};
+
+static ID: OnceCell<String> = OnceCell::new();
 
 #[derive(Debug, Default, Actor, HealthResponder)]
 #[services(Actor, HttpServer)]
@@ -19,14 +19,10 @@ impl HttpServer for OledActor {
         ctx: &Context,
         req: &HttpRequest,
     ) -> std::result::Result<HttpResponse, RpcError> {
-        lazy_static! {
-            static ref ID: AsyncOnce<String> = AsyncOnce::new(async {
-                generate_guid()
-                    .await
-                    .expect("should have got a guid from the host runtime")
-            });
-        }
-
+        let id = match ID.get() {
+            Some(id) => id.to_owned(),
+            None => NumberGenSender::new().generate_guid(ctx).await?,
+        };
         let trimmed_path = match req.path.trim_end_matches('/') {
             "" => "/",
             x => x,
@@ -35,16 +31,12 @@ impl HttpServer for OledActor {
         match (req.method.as_ref(), trimmed_path) {
             ("POST", "/") => {
                 let text = deser(&req.body)?;
-                info!(
-                    "{}: updating display with: {}",
-                    ID.get().await.as_str(),
-                    text
-                );
+                info!("{}: updating display with: {}", id, text);
                 OledSender::new().update(ctx, &Request { text }).await?;
                 Ok(HttpResponse::default())
             }
             ("DELETE", "/") => {
-                info!("{}: clearing display", ID.get().await.as_str());
+                info!("{}: clearing display", id);
                 OledSender::new().clear(ctx).await?;
                 Ok(HttpResponse::default())
             }

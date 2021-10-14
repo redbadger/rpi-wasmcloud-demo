@@ -92,12 +92,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "async_once"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58f8f7a882f8fffee0bdbb0580033b01613b50781e03c02713da0599ed90b595"
-
-[[package]]
 name = "atelier_assembler"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1391,14 +1385,13 @@ dependencies = [
 
 [[package]]
 name = "oled_actor"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
- "async_once",
  "form_urlencoded",
  "futures 0.3.17",
- "lazy_static",
  "oled-ssd1306-interface",
+ "once_cell",
  "serde",
  "serde_bytes",
  "serde_json",
