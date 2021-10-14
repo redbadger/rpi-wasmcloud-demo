@@ -1,25 +1,25 @@
-#[cfg(target_os = "aarch64")]
+#[cfg(target_arch = "aarch64")]
 use anyhow::anyhow;
 use anyhow::Result;
-#[cfg(target_os = "aarch64")]
+#[cfg(target_arch = "aarch64")]
 use embedded_graphics::{
     mono_font::{ascii::FONT_9X18, MonoTextStyle},
     pixelcolor::BinaryColor,
     prelude::*,
     primitives::Rectangle,
 };
-#[cfg(target_os = "aarch64")]
+#[cfg(target_arch = "aarch64")]
 use embedded_text::{
     alignment::HorizontalAlignment,
     style::{HeightMode, TextBoxStyleBuilder},
     TextBox,
 };
-#[cfg(target_os = "aarch64")]
+#[cfg(target_arch = "aarch64")]
 use linux_embedded_hal::I2cdev;
-#[cfg(target_os = "aarch64")]
+#[cfg(target_arch = "aarch64")]
 use ssd1306::{prelude::*, I2CDisplayInterface, Ssd1306};
 
-#[cfg(target_os = "aarch64")]
+#[cfg(target_arch = "aarch64")]
 pub fn say(text: &str) -> Result<()> {
     let i2c = I2cdev::new("/dev/i2c-1")?;
     let interface = I2CDisplayInterface::new(i2c);
@@ -50,7 +50,7 @@ pub fn say(text: &str) -> Result<()> {
         .map_err(|e| anyhow!("error flushing display {:?}", e))
 }
 
-#[cfg(not(target_os = "aarch64"))]
+#[cfg(not(target_arch = "aarch64"))]
 pub fn say(_text: &str) -> Result<()> {
     Ok(())
 }
