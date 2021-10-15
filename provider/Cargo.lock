@@ -1630,28 +1630,14 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
- "base64",
- "bytes",
- "chrono",
- "crossbeam",
  "embedded-graphics",
  "embedded-text",
  "futures 0.3.17",
  "linux-embedded-hal",
  "log",
  "oled-ssd1306-interface",
- "once_cell",
- "reqwest",
- "rmp-serde",
- "serde",
- "serde_bytes",
- "serde_json",
  "ssd1306",
- "thiserror",
- "tokio",
- "toml",
  "wasmbus-rpc",
- "wasmcloud-test-util",
 ]
 
 [[package]]
@@ -3153,43 +3139,6 @@ dependencies = [
  "wascap",
  "wasmbus-macros",
  "weld-codegen",
-]
-
-[[package]]
-name = "wasmcloud-interface-testing"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1fe90e2e29b2384664585463fc7d0facad2b591d3a24703c88b2dc77cd2f9441"
-dependencies = [
- "async-trait",
- "regex",
- "serde",
- "serde_bytes",
- "serde_json",
- "wasmbus-rpc",
- "weld-codegen",
-]
-
-[[package]]
-name = "wasmcloud-test-util"
-version = "0.1.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c9615951a9534b0476faba2c0c7442751388c7fe8bb067824fccab827f4b5759"
-dependencies = [
- "anyhow",
- "async-trait",
- "base64",
- "futures 0.3.17",
- "log",
- "regex",
- "serde",
- "serde_json",
- "termcolor",
- "tokio",
- "toml",
- "wascap",
- "wasmbus-rpc",
- "wasmcloud-interface-testing",
 ]
 
 [[package]]
