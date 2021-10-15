@@ -8,21 +8,49 @@ In this example, the lattice is made of three [wasmcloud](https://wasmcloud.dev/
 
 The Mac node hosts the wasmcloud [HTTP Server provider](https://github.com/wasmCloud/capability-providers) that forwards incoming requests to our sandboxed [WASM](https://webassembly.org/) actor, which can run on any node, but in this demo runs on `pi_02`.
 
-The Mac node also hosts the wasmcloud [Logging provider](https://github.com/wasmCloud/capability-providers), which the actor uses to log to `stdout`.
+Wasmcloud has a built-in [Logging provider](https://github.com/wasmCloud/capability-providers), which the actor uses to log to `stdout`.
 
-The WASM actor contains our "business" logic. It is signed and only given permissions to talk with the HTTP Server provider, the Logging provider and the OLED provider. The OLED provider is dynamically linked at runtime into the node running on `pi_01`, where it natively controls an OLED display.
+The WASM actor contains our "business" logic. It is signed and only given permissions to talk with the HTTP Server provider, the Logging provider, the NumberGen provider (for generating a uuid to identify the actor instance) and the OLED provider. The OLED provider is hosted by the wasmCloud host running on `pi_01`, where it natively controls an OLED display.
 
 ![wasmcloud lattice across Mac and Pi](./docs/wasmcloud-lattice.svg)
 
 ## Setup
 
-1. Raspberry Pi 4B, 8GB
+1. make sure I2C is enabled on the Pi with the Oled display attached.
 
-   1. Rust stable
-   2. Rust Analyzer – `aarch64` builds are currently only available on nightly (`rustup component add rust-analyzer-preview`)
-   3. I2C enabled in `sudo raspi-config`
+   ```bash
+   sudo raspi-config
+   ```
 
-2. OLED display with SSD1306 display driver
+2. install Rust on each Pi
+
+   ```bash
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+   ```
+
+3. install Elixir on each Pi
+
+   ```bash
+   echo "deb https://packages.erlang-solutions.com/debian buster contrib" \
+   | sudo tee /etc/apt/sources.list.d/erlang-solutions.list
+
+   wget https://packages.erlang-solutions.com/debian/erlang_solutions.asc \
+   && sudo apt-key add erlang_solutions.asc \
+   && rm erlang_solutions.asc
+
+   sudo apt update
+   sudo apt install erlang-parsetools erlang-dev elixir
+   ```
+
+4. clone the `wasmcloud-otp` repo, then build `wasmcloud_host` on each Pi
+
+   ```bash
+   git clone git@github.com:wasmCloud/wasmcloud-otp.git
+   cd wasmcloud-otp/wasmcloud_host
+   make build
+   ```
+
+5. install the OLED display with SSD1306 display driver, on one Pi
 
    1. [MakerHawk OLED Display Module, SSD1306, 128x64](https://smile.amazon.co.uk/gp/product/B0777HHQDT)
    2. Header pins need soldering onto the OLED board
@@ -32,119 +60,99 @@ The WASM actor contains our "business" logic. It is signed and only given permis
       3. `SCL` - pin 5
       4. `SDA` - pin 3
 
-3. NATS server on the Mac:
-
-   ```sh
-   brew install nats-server
-   brew services start nats-server
-   ```
-
-4. VSCode with these extensions
-
-   1. [Remote SSH](https://code.visualstudio.com/docs/remote/ssh) - useful for writing code directly on a Pi.
-   2. [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer) - essential :-)
-
-5. wasmcloud and [`wash`](https://github.com/wascc/wash) installed on the Mac:
-
-   ```sh
-   cargo install wasmcloud wash-cli
-   ```
-
-## Build
-
-Build the actor and the provider and push them to an OCI registry.
-
-### `oled_ssd1306`
-
-```sh
-cd oled_ssd1306
-
-make
-
-export REGISTRY=redbadger.azurecr.io # set your OCI registry
-export OCI_REGISTRY_USER=username # set your OCI registry username
-export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
-make push
-```
-
-### `oled_actor`
-
-```sh
-cd oled_actor
-
-make
-
-export REGISTRY=redbadger.azurecr.io # set your OCI registry
-export OCI_REGISTRY_USER=username # set your OCI registry username
-export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
-make push
-```
-
-## Run
-
-1. Find the IP address of your Mac:
+6. find the IP address of your Mac
 
    ```sh
    ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p'
    ```
 
-2. Install wasmcloud on MacOS:
+   and add the Mac's IP address and hostname to `/etc/hosts` on each Pi, so that you can use the OCI registry hosted on the mac.
+
+7. run NATS server, wasmcloud, redis, and a local OCI registry, on the Mac
+
+   ```sh
+   docker-compose up -d
+
+   # if using `lima` and `containerd`...
+   # (note you may need to install `vde_vmnet` as per
+   # https://github.com/lima-vm/lima/blob/master/docs/network.md
+   # to allow access to NATS from other machines)
+   lima nerdctl compose up -d
+   ```
+
+   Note the cluster seed and signer keys and add them to `~/wasmcloud-otp/wasmcloud_host/.env` files on each Pi. The `.env` files should look like the following (replace the keys and the mac's host name).
 
    ```bash
-   cargo install wasmcloud
+   WASMCLOUD_CLUSTER_SEED=SCADVNVKDODD25EHKQHT4UAAZMKQUXTEO5PFLMPYFZWUCSIC6NPWLLJRJE
+   WASMCLOUD_CLUSTER_ISSUERS=CC32VPAIXM7FYMJQKPEA4JJAAQQEFGEHYRU3FOJR4EC7AWIANLIZ3PYB
+   WASMCLOUD_CTL_HOST=stuarts-macbook-pro.local
+   WASMCLOUD_RPC_HOST=stuarts-macbook-pro.local
+   WASMCLOUD_PROV_RPC_HOST=stuarts-macbook-pro.local
+   WASMCLOUD_OCI_ALLOWED_INSECURE=stuarts-macbook-pro.local:5000
    ```
 
-3. Install wasmcloud on Raspberry Pi 64bit debian:
+8. run a wasmCloud host on each Pi:
 
    ```bash
-   # install rust toolchain
-   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
-   # dev tools
-   sudo apt install libssl-dev libclang-dev clang-9
-
-   # wasmcloud
-   cargo install wasmcloud
+   cd ~/wasmcloud-otp/wasmcloud_host
+   make run
    ```
 
-4. On `pi_01` (the Pi with the OLED display):
+9. open the washboard in a browser on the mac (http://localhost:4000) for starting providers, actors and defining links.
 
-   The environment variable `KVCACHE_NATS_URL` is also used by the default KV cache provider, to share the cache between nodes.
+10. you may want to install these extensions into vscode (on the Mac and the Pi that you use to build the provider)
 
-   ```sh
-   export OCI_REGISTRY_USER=username # set your OCI registry username
-   export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
-   export KVCACHE_NATS_URL=192.168.0.238 # set your NATS server IP address from step 1
-   wasmcloud --control-host $KVCACHE_NATS_URL --rpc-host $KVCACHE_NATS_URL --allow-live-updates --label name=pi-01
-   ```
+    1. [Remote SSH](https://code.visualstudio.com/docs/remote/ssh) - useful for writing code directly on a Pi.
+    2. [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer) - essential :-)
 
-5. On `pi_02` (the other Pi):
+11. install `wash` on the Mac:
 
-   ```sh
-   export OCI_REGISTRY_USER=username # set your OCI registry username
-   export OCI_REGISTRY_PASSWORD=password # set your OCI registry password
-   export KVCACHE_NATS_URL=192.168.0.238 # set your NATS server IP address from step 1
-   wasmcloud --control-host $KVCACHE_NATS_URL --rpc-host $KVCACHE_NATS_URL --allow-live-updates --label name=pi-02
-   ```
+    ```sh
+    brew tap wasmcloud/wasmcloud
+    brew install wash
+    ```
 
-6. On `MacOS`:
+12. install `wash` on the Pi that is used to build the provider:
 
-   `RUST_LOG=info` is needed for the Logging provider (which our actor uses to log to `stdout`).
+    ```sh
+    cargo install wash-cli
+    ```
 
-   ```sh
-   KVCACHE_NATS_URL=0.0.0.0 RUST_LOG=info wasmcloud
-   ```
+## Build
 
-   There is a [start script](./scripts/start.sh), which starts providers and actors, and links them together.
+Build the provider and the actor, and push them to an OCI registry.
 
-   (You can actually run more than one instance of the actor — each will be scheduled on a free node — and each actor instance logs a unique uuid so we can see in the host logs how requests are load balanced between each of the actors.)
+### `provider`
 
-   ```sh
-   ./scripts/start.sh
+```sh
+# on a Raspberry Pi, e.g. via vscode remote
+cd provider
+make build
 
-   # to test
-   curl -d 'Hello from wasmcloud!' http://127.0.0.1:8081
-   curl -X DELETE http://127.0.0.1:8081
-   ```
+# push to an OCI registry, e.g...
+wash reg push --insecure stuarts-macbook-pro.local:5000/v2/oled-ssd1306-provider:0.1.0 build/oled-ssd1306-provider.par.gz
+```
+
+### `actor`
+
+```sh
+# on the MacBook
+cd actor
+make
+
+# push to an OCI registry, e.g...
+wash reg push --insecure stuarts-macbook-pro.local:5000/v2/oled_actor:0.1.0 build/oled_actor_s.wasm
+```
+
+## Run
+
+The script ([./scripts/start.sh](./scripts/start.sh)) still needs updating, so for now, use the washboard to start the oled provider (on `pi_01`), http provider (on mac), actor (`pi_02`, or wherever) and create links between them. Note that when creating the link for the http server provider, use `address=0.0.0.0:8081` (or similar) if you are hosting wasmCloud in docker on the mac.
+
+```sh
+
+# to test
+curl -d 'Hello from wasmcloud!' http://127.0.0.1:8081
+curl -X DELETE http://127.0.0.1:8081
+```
 
 ![Photo of setup](docs/wasmcloud.jpg)
