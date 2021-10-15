@@ -1,12 +1,12 @@
 use oled_ssd1306_interface::{Oled, OledSender, Request};
 use once_cell::sync::OnceCell;
-use serde::Deserialize;
+use std::str;
 use wasmbus_rpc::actor::prelude::*;
 use wasmcloud_interface_httpserver::{HttpRequest, HttpResponse, HttpServer, HttpServerReceiver};
 use wasmcloud_interface_logging::{info, warn};
 use wasmcloud_interface_numbergen::{NumberGen, NumberGenSender};
 
-static ID: OnceCell<String> = OnceCell::new();
+static INSTANCE: OnceCell<String> = OnceCell::new();
 
 #[derive(Debug, Default, Actor, HealthResponder)]
 #[services(Actor, HttpServer)]
@@ -19,9 +19,13 @@ impl HttpServer for OledActor {
         ctx: &Context,
         req: &HttpRequest,
     ) -> std::result::Result<HttpResponse, RpcError> {
-        let id = match ID.get() {
-            Some(id) => id.to_owned(),
-            None => NumberGenSender::new().generate_guid(ctx).await?,
+        let instance = match INSTANCE.get() {
+            Some(instance) => instance.to_owned(),
+            None => {
+                let instance = NumberGenSender::new().generate_guid(ctx).await?;
+                INSTANCE.set(instance.clone())?;
+                instance
+            }
         };
         let trimmed_path = match req.path.trim_end_matches('/') {
             "" => "/",
@@ -30,24 +34,22 @@ impl HttpServer for OledActor {
 
         match (req.method.as_ref(), trimmed_path) {
             ("POST", "/") => {
-                let text = deser(&req.body)?;
-                info!("{}: updating display with: {}", id, text);
+                let text = str::from_utf8(&req.body)
+                    .map_err(|e| RpcError::Deser(format!("{}", e)))?
+                    .to_string();
+                info!("{}: updating display with: {}", instance, text);
                 OledSender::new().update(ctx, &Request { text }).await?;
                 Ok(HttpResponse::default())
             }
             ("DELETE", "/") => {
-                info!("{}: clearing display", id);
+                info!("{}: clearing display", instance);
                 OledSender::new().clear(ctx).await?;
                 Ok(HttpResponse::default())
             }
             (_, _) => {
-                warn!("no route for this request: {:?}", req);
+                warn!("{}: no route for this request: {:?}", instance, req);
                 Ok(HttpResponse::not_found())
             }
         }
     }
-}
-
-fn deser<'de, T: Deserialize<'de>>(raw: &'de [u8]) -> RpcResult<T> {
-    serde_json::from_slice(raw).map_err(|e| RpcError::Deser(format!("{}", e)))
 }

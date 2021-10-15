@@ -1388,13 +1388,9 @@ name = "oled_actor"
 version = "0.1.1"
 dependencies = [
  "async-trait",
- "form_urlencoded",
  "futures 0.3.17",
  "oled-ssd1306-interface",
  "once_cell",
- "serde",
- "serde_bytes",
- "serde_json",
  "wasmbus-rpc",
  "wasmcloud-interface-httpserver",
  "wasmcloud-interface-logging",

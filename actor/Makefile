@@ -6,8 +6,8 @@ REVISION = 0
 # list of all contract claims for actor signing (space-separated)
 CLAIMS = \
 	red-badger:oled-ssd1306 \
-	wasmcloud:builtins:logging \
-	wasmcloud:builtins:numbergen \
+	wasmcloud:builtin:logging \
+	wasmcloud:builtin:numbergen \
 	wasmcloud:httpserver
 # registry url for our actor
 REG_URL  = localhost:5000/v2/$(PROJECT):$(VERSION)
