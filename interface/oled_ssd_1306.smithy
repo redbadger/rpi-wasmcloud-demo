@@ -11,7 +11,6 @@ use org.wasmcloud.model#wasmbus
 
 @wasmbus(
   contractId: "red-badger:oled-ssd1306",
-  actorReceive: true,
   providerReceive: true
 )
 service Oled {

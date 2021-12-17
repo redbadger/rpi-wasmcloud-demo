@@ -24,7 +24,6 @@ pub struct Request {
 
 /// wasmbus.contractId: red-badger:oled-ssd1306
 /// wasmbus.providerReceive
-/// wasmbus.actorReceive
 #[async_trait]
 pub trait Oled {
     /// returns the capability contract id for this interface
@@ -77,27 +76,6 @@ pub struct OledSender<T: Transport> {
 impl<T: Transport> OledSender<T> {
     /// Constructs a OledSender with the specified transport
     pub fn via(transport: T) -> Self {
-        Self { transport }
-    }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-impl<'send> OledSender<wasmbus_rpc::provider::ProviderTransport<'send>> {
-    /// Constructs a Sender using an actor's LinkDefinition,
-    /// Uses the provider's HostBridge for rpc
-    pub fn for_actor(ld: &'send wasmbus_rpc::core::LinkDefinition) -> Self {
-        Self {
-            transport: wasmbus_rpc::provider::ProviderTransport::new(ld, None),
-        }
-    }
-}
-#[cfg(target_arch = "wasm32")]
-impl OledSender<wasmbus_rpc::actor::prelude::WasmHost> {
-    /// Constructs a client for actor-to-actor messaging
-    /// using the recipient actor's public key
-    pub fn to_actor(actor_id: &str) -> Self {
-        let transport =
-            wasmbus_rpc::actor::prelude::WasmHost::to_actor(actor_id.to_string()).unwrap();
         Self { transport }
     }
 }
