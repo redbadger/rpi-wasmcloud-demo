@@ -39,7 +39,8 @@ export function getArch() {
     linux: "linux",
   };
   const architectures = {
-    x64: "x86_64", // todo add ARM
+    x64: "x86_64",
+    arm64: "aarch64",
   };
   return `${architectures[os.arch()]}-${operating_systems[os.platform()]}`;
 }
