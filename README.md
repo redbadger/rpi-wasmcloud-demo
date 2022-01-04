@@ -82,15 +82,15 @@ The Wasm actor contains our "business" logic. It is signed and only given permis
    lima nerdctl compose up -d
    ```
 
-   Note the cluster seed and signer keys and add them to `~/wasmcloud-otp/wasmcloud_host/.env` files on each Pi. The `.env` files should look like the following (replace the keys and the mac's host name).
+   Note the cluster seed and signer keys and add them to `~/wasmcloud-otp/host_core/.env` files on each Pi. The `.env` files should look like the following (replace the keys and the mac's host name).
 
    ```bash
-   WASMCLOUD_CLUSTER_SEED=SCADVNVKDODD25EHKQHT4UAAZMKQUXTEO5PFLMPYFZWUCSIC6NPWLLJRJE
-   WASMCLOUD_CLUSTER_ISSUERS=CC32VPAIXM7FYMJQKPEA4JJAAQQEFGEHYRU3FOJR4EC7AWIANLIZ3PYB
+   WASMCLOUD_CLUSTER_SEED=SCANP3E75PCKS5AF2UI56HBJ5HVGYVXL52ZJS35S6MVHOYB7LAAXSU6B24
+   WASMCLOUD_CLUSTER_ISSUERS=CDAM4OLLU5ZKQTWXYCGJ2IKMAFIHFCXTBIEOAGUDK26KUVJAH3RCXGUS
    WASMCLOUD_CTL_HOST=stuarts-macbook-pro.local
    WASMCLOUD_RPC_HOST=stuarts-macbook-pro.local
    WASMCLOUD_PROV_RPC_HOST=stuarts-macbook-pro.local
-   WASMCLOUD_OCI_ALLOWED_INSECURE=stuarts-macbook-pro.local:5000
+   WASMCLOUD_OCI_ALLOWED_INSECURE=registry:5001
    ```
 
 8. run a wasmCloud host on each Pi:
@@ -128,11 +128,23 @@ Build the provider and the actor, and push them to an OCI registry.
 
 ```sh
 # on a Raspberry Pi, e.g. via vscode remote
+
+# install node
+curl -fsSL https://fnm.vercel.app/install | bash
+source /home/pi/.bashrc
+
+# install zx
+fnm install 16
+
+# install dirsh
+cargo install dirsh
+
+# build provider
 cd provider
 make build
 
-# push to an OCI registry, e.g...
-wash reg push --insecure stuarts-macbook-pro.local:5000/v2/oled-ssd1306-provider:0.1.0 build/oled-ssd1306-provider.par.gz
+# push to registry on mac (ensure there is an entry in /etc/hosts for `registry`, pointing at Mac)
+make push
 ```
 
 ### `actor`
@@ -142,19 +154,19 @@ wash reg push --insecure stuarts-macbook-pro.local:5000/v2/oled-ssd1306-provider
 cd actor
 make
 
-# push to an OCI registry, e.g...
-wash reg push --insecure stuarts-macbook-pro.local:5000/v2/oled_actor:0.1.0 build/oled_actor_s.wasm
+# push to registry
+make push
 ```
 
 ## Run
 
-The script ([./scripts/start.sh](./scripts/start.sh)) still needs updating, so for now, use the washboard to start the oled provider (on `pi_01`), http provider (on mac), actor (`pi_02`, or wherever) and create links between them. Note that when creating the link for the http server provider, use `address=0.0.0.0:8081` (or similar) if you are hosting wasmCloud in docker on the mac.
+The script ([./scripts/start.sh](./scripts/start.sh)) still needs updating, so for now, use the washboard to start the oled provider (on `pi_01`), http provider (on mac), actor (`pi_02`, or wherever) and create links between them. Note that when creating the link for the http server provider, use `address=0.0.0.0:8080` (or similar) if you are hosting wasmCloud in docker on the mac.
 
 ```sh
 
 # to test
-curl -d 'Hello from wasmcloud!' http://127.0.0.1:8081
-curl -X DELETE http://127.0.0.1:8081
+curl -d 'Hello from wasmcloud!' http://127.0.0.1:8080
+curl -X DELETE http://127.0.0.1:8080
 ```
 
 ![Photo of setup](docs/wasmcloud.jpg)

@@ -4,7 +4,9 @@ import { step } from "./lib.mjs";
 
 const REGISTRY = "registry:5001";
 const WASMCLOUD_CLUSTER_SEED =
-  "SCAOFCRXCK6Q3JBCDHFO66S7X5GDMQ2HULI6YVD2FZ5ZQJDH66PONA5JTU";
+  "SCANP3E75PCKS5AF2UI56HBJ5HVGYVXL52ZJS35S6MVHOYB7LAAXSU6B24";
+const WASMCLOUD_CLUSTER_ISSUERS =
+  "CDAM4OLLU5ZKQTWXYCGJ2IKMAFIHFCXTBIEOAGUDK26KUVJAH3RCXGUS";
 const ACTOR = {
   id: "MC5QO34YH43RO6R3AMM3I4XC7ET2KXEMXLW4CX3XFQR4XWGF6QREPPBH",
   ref: `${REGISTRY}/oled_actor:0.0.1`,
@@ -23,20 +25,23 @@ const OLED = {
 
 if (argv.up) {
   step("Starting containers");
-  await $`WASMCLOUD_CLUSTER_SEED=${WASMCLOUD_CLUSTER_SEED} docker compose up -d`;
+  await $`
+  	WASMCLOUD_CLUSTER_SEED=${WASMCLOUD_CLUSTER_SEED} \
+	WASMCLOUD_CLUSTER_ISSUERS=${WASMCLOUD_CLUSTER_ISSUERS} \
+	docker compose up -d`;
 }
 
 if (argv.start) {
   step("starting workloads");
-  await $`(cd ../actor && make push)`;
-  await $`(cd ../provider && make push)`;
-  await $`wash ctl start actor ${ACTOR.ref} --timeout 30`;
+  //   await $`(cd ../actor && make push)`;
+  //   await $`(cd ../provider && make push)`;
+  //   await $`wash ctl start actor ${ACTOR.ref} --timeout 30`;
 
   await $`wash ctl link put ${ACTOR.id} ${HTTPSERVER.id} ${HTTPSERVER.contract} ${HTTPSERVER.config}`;
-  await $`wash ctl start provider ${HTTPSERVER.ref} --link-name default --timeout 30`;
+  //   await $`wash ctl start provider ${HTTPSERVER.ref} --link-name default --timeout 30`;
 
-  await $`wash ctl link put ${ACTOR.id} ${PROVIDER.id} ${PROVIDER.contract} ${PROVIDER.config}`;
-  await $`wash ctl start provider ${PROVIDER.ref} --link-name default --timeout 30`;
+  await $`wash ctl link put ${ACTOR.id} ${OLED.id} ${OLED.contract}`;
+  //   await $`wash ctl start provider ${OLED.ref} --link-name default --timeout 30`;
 }
 
 if (argv.restart_actor) {
@@ -51,19 +56,19 @@ if (argv.restart_actor) {
 if (argv.restart_provider) {
   step("restarting provider");
   const host = await getHost();
-  await $`wash ctl stop provider ${host} ${PROVIDER.id} default ${PROVIDER.contract} --timeout 30`;
+  await $`wash ctl stop provider ${host} ${OLED.id} default ${OLED.contract} --timeout 30`;
   await $`wash drain all`;
   await $`(cd ../provider && make push)`;
-  await $`wash ctl start provider ${PROVIDER.ref} --link-name default --timeout 30`;
+  await $`wash ctl start provider ${OLED.ref} --link-name default --timeout 30`;
 }
 
 if (argv.stop) {
   step("stop workloads");
   const host = await getHost();
   await $`wash ctl stop actor ${host} ${ACTOR.id} --timeout 30`;
-  await $`wash ctl stop provider ${host} ${PROVIDER.id} default ${PROVIDER.contract} --timeout 30`;
+  await $`wash ctl stop provider ${host} ${OLED.id} default ${OLED.contract} --timeout 30`;
   await $`wash ctl stop provider ${host} ${HTTPSERVER.id} default ${HTTPSERVER.contract} --timeout 30`;
-  await $`wash ctl link del ${ACTOR.id} ${PROVIDER.contract}`;
+  await $`wash ctl link del ${ACTOR.id} ${OLED.contract}`;
   await $`wash ctl link del ${ACTOR.id} ${HTTPSERVER.contract}`;
 }
 

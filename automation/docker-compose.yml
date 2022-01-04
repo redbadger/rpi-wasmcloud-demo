@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
   wasmcloud:
     container_name: wasmcloud_container
-    image: wasmcloud/wasmcloud_host:latest
+    image: wasmcloud/wasmcloud_host:0.51.4
     environment:
       LC_ALL: en_US.UTF-8
       WASMCLOUD_OCI_ALLOWED_INSECURE: registry:5001
@@ -27,6 +27,7 @@ services:
       WASMCLOUD_CTL_HOST: nats
       WASMCLOUD_PROV_RPC_HOST: nats
       WASMCLOUD_CLUSTER_SEED: ${WASMCLOUD_CLUSTER_SEED}
+      WASMCLOUD_CLUSTER_ISSUERS: ${WASMCLOUD_CLUSTER_ISSUERS}
     ports:
       - "127.0.0.1:4000:4000" # washboard
       - "127.0.0.1:443:8443" # httpserver HTTPS port
