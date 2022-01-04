@@ -1,16 +1,16 @@
 # Raspberry Pi wasmcloud Demo
 
-This is a demo of a wasmCloud 0.50 [lattice](https://www.wasmcloud.dev/reference/lattice) running across an Apple MacBook Pro and 2 x Raspberry Pi 4B.
+This is a demo of a wasmCloud [lattice](https://www.wasmcloud.dev/reference/lattice) running across an Apple MacBook Pro and 2 x Raspberry Pi 4B.
 
-> _A lattice is a seamless, distributed unit of compute that can self-form atop any combination of cloud, edge, and physical infrastructure._
+> _The lattice is a self-forming, self-healing mesh network that provides a unified, flattened topology across any number of disparate environments, clouds, browsers, or even hardware._
 
 In this example, the lattice is made of three [wasmcloud](https://wasmcloud.dev/) nodes, one on the Mac and one on each Pi. However it would work just as well with one Pi, simply collapse `pi_01` and `pi_02` together as you go.
 
-The Mac node hosts the wasmcloud [HTTP Server provider](https://github.com/wasmCloud/capability-providers) that forwards incoming requests to our sandboxed [WASM](https://webassembly.org/) actor, which can run on any node, but in this demo runs on `pi_02`.
+The Mac node hosts the wasmcloud [HTTP Server Capability](https://github.com/wasmCloud/capability-providers) that forwards incoming requests to our sandboxed [Wasm](https://webassembly.org/) actor, which can run on any node, but in this demo runs on `pi_02`.
 
-Wasmcloud has a built-in [Logging provider](https://github.com/wasmCloud/capability-providers), which the actor uses to log to `stdout`.
+Wasmcloud has a built-in [Logging Capability](https://github.com/wasmCloud/capability-providers), which the actor uses to log to `stdout`.
 
-The WASM actor contains our "business" logic. It is signed and only given permissions to talk with the HTTP Server provider, the Logging provider, the NumberGen provider (for generating a uuid to identify the actor instance) and the OLED provider. The OLED provider is hosted by the wasmCloud host running on `pi_01`, where it natively controls an OLED display.
+The Wasm actor contains our "business" logic. It is signed and only given permissions to talk with the HTTP Server capability, the Logging capability, the NumberGen capability (for generating a uuid to identify the actor instance) and our OLED capability. This OLED capability is hosted by the wasmCloud host running on `pi_01`, where it natively controls an OLED display.
 
 ![wasmcloud lattice across Mac and Pi](./docs/wasmcloud-lattice.svg)
 
@@ -42,11 +42,12 @@ The WASM actor contains our "business" logic. It is signed and only given permis
    sudo apt install erlang-parsetools erlang-dev elixir
    ```
 
-4. clone the `wasmcloud-otp` repo, then build `wasmcloud_host` on each Pi
+4. clone the `wasmcloud-otp` repo, then build `host_core` on each Pi
 
    ```bash
    git clone git@github.com:wasmCloud/wasmcloud-otp.git
-   cd wasmcloud-otp/wasmcloud_host
+   git checkout v0.51.4
+   cd wasmcloud-otp/host_core
    make build
    ```
 
@@ -71,6 +72,7 @@ The WASM actor contains our "business" logic. It is signed and only given permis
 7. run NATS server, wasmcloud, redis, and a local OCI registry, on the Mac
 
    ```sh
+   # if using Docker...
    docker-compose up -d
 
    # if using `lima` and `containerd`...
@@ -94,11 +96,11 @@ The WASM actor contains our "business" logic. It is signed and only given permis
 8. run a wasmCloud host on each Pi:
 
    ```bash
-   cd ~/wasmcloud-otp/wasmcloud_host
+   cd ~/wasmcloud-otp/host_core
    make run
    ```
 
-9. open the washboard in a browser on the mac (http://localhost:4000) for starting providers, actors and defining links.
+9. open the washboard in a browser on the mac (<http://localhost:4000>) for starting providers, actors and defining links.
 
 10. you may want to install these extensions into vscode (on the Mac and the Pi that you use to build the provider)
 

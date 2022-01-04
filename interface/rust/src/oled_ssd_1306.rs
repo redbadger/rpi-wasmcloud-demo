@@ -1,14 +1,10 @@
-// This file is generated automatically using wasmcloud-weld and smithy model definitions
+// This file is generated automatically using wasmcloud/weld-codegen and smithy model definitions
 //
 
-#![allow(clippy::ptr_arg)]
-#[allow(unused_imports)]
+#![allow(unused_imports, clippy::ptr_arg, clippy::needless_lifetimes)]
 use async_trait::async_trait;
-#[allow(unused_imports)]
 use serde::{Deserialize, Serialize};
-#[allow(unused_imports)]
-use std::{borrow::Cow, string::ToString};
-#[allow(unused_imports)]
+use std::{borrow::Cow, io::Write, string::ToString};
 use wasmbus_rpc::{
     deserialize, serialize, Context, Message, MessageDispatch, RpcError, RpcResult, SendOpts,
     Timestamp, Transport,
@@ -43,19 +39,19 @@ pub trait OledReceiver: MessageDispatch + Oled {
             "Update" => {
                 let value: Request = deserialize(message.arg.as_ref())
                     .map_err(|e| RpcError::Deser(format!("message '{}': {}", message.method, e)))?;
-                let resp = Oled::update(self, ctx, &value).await?;
-                let buf = Cow::Owned(serialize(&resp)?);
+                let _resp = Oled::update(self, ctx, &value).await?;
+                let buf = Vec::new();
                 Ok(Message {
                     method: "Oled.Update",
-                    arg: buf,
+                    arg: Cow::Owned(buf),
                 })
             }
             "Clear" => {
-                let resp = Oled::clear(self, ctx).await?;
-                let buf = Cow::Owned(serialize(&resp)?);
+                let _resp = Oled::clear(self, ctx).await?;
+                let buf = Vec::new();
                 Ok(Message {
                     method: "Oled.Clear",
-                    arg: buf,
+                    arg: Cow::Owned(buf),
                 })
             }
             _ => Err(RpcError::MethodNotHandled(format!(
@@ -77,6 +73,10 @@ impl<T: Transport> OledSender<T> {
     /// Constructs a OledSender with the specified transport
     pub fn via(transport: T) -> Self {
         Self { transport }
+    }
+
+    pub fn set_timeout(&self, interval: std::time::Duration) {
+        self.transport.set_timeout(interval);
     }
 }
 
@@ -107,14 +107,14 @@ impl OledSender<wasmbus_rpc::actor::prelude::WasmHost> {
 impl<T: Transport + std::marker::Sync + std::marker::Send> Oled for OledSender<T> {
     #[allow(unused)]
     async fn update(&self, ctx: &Context, arg: &Request) -> RpcResult<()> {
-        let arg = serialize(arg)?;
+        let buf = serialize(arg)?;
         let resp = self
             .transport
             .send(
                 ctx,
                 Message {
                     method: "Oled.Update",
-                    arg: Cow::Borrowed(&arg),
+                    arg: Cow::Borrowed(&buf),
                 },
                 None,
             )
@@ -123,14 +123,14 @@ impl<T: Transport + std::marker::Sync + std::marker::Send> Oled for OledSender<T
     }
     #[allow(unused)]
     async fn clear(&self, ctx: &Context) -> RpcResult<()> {
-        let arg = *b"";
+        let buf = *b"";
         let resp = self
             .transport
             .send(
                 ctx,
                 Message {
                     method: "Oled.Clear",
-                    arg: Cow::Borrowed(&arg),
+                    arg: Cow::Borrowed(&buf),
                 },
                 None,
             )

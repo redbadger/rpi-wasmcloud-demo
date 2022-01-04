@@ -9,14 +9,14 @@ crate-type = ["cdylib", "rlib"]
 name = "oled_actor"
 
 [dependencies]
-async-trait = "0.1"
-futures = "0.3"
+async-trait = "0.1.52"
+futures = "0.3.19"
 oled-ssd1306-interface = {path = "../interface/rust"}
-once_cell = "1.8.0"
-wasmbus-rpc = "0.4"
-wasmcloud-interface-httpserver = "0.1"
-wasmcloud-interface-logging = "0.1"
-wasmcloud-interface-numbergen = "0.1"
+once_cell = "1.9.0"
+wasmbus-rpc = "0.6.1"
+wasmcloud-interface-httpserver = "0.3.0"
+wasmcloud-interface-logging = "0.3.0"
+wasmcloud-interface-numbergen = "0.3.0"
 
 [profile.release]
 # Optimize for small code size

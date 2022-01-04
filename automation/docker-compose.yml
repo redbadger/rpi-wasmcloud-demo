@@ -1,0 +1,34 @@
+version: "3.5"
+services:
+  nats:
+    container_name: nats_container
+    image: nats:2.6.4
+    ports:
+      - "4222:4222"
+      - "6222:6222"
+      - "8222:8222"
+    command: ["-js"]
+    restart: unless-stopped
+  registry:
+    container_name: registry_container
+    image: registry:2.7
+    ports:
+      - "5001:5001"
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:5001
+    restart: unless-stopped
+  wasmcloud:
+    container_name: wasmcloud_container
+    image: wasmcloud/wasmcloud_host:latest
+    environment:
+      LC_ALL: en_US.UTF-8
+      WASMCLOUD_OCI_ALLOWED_INSECURE: registry:5001
+      WASMCLOUD_RPC_HOST: nats
+      WASMCLOUD_CTL_HOST: nats
+      WASMCLOUD_PROV_RPC_HOST: nats
+      WASMCLOUD_CLUSTER_SEED: ${WASMCLOUD_CLUSTER_SEED}
+    ports:
+      - "127.0.0.1:4000:4000" # washboard
+      - "127.0.0.1:443:8443" # httpserver HTTPS port
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
