@@ -28,6 +28,7 @@ services:
       WASMCLOUD_PROV_RPC_HOST: nats
       WASMCLOUD_CLUSTER_SEED: ${WASMCLOUD_CLUSTER_SEED}
       WASMCLOUD_CLUSTER_ISSUERS: ${WASMCLOUD_CLUSTER_ISSUERS}
+      HOST_NODE: MacOS
     ports:
       - "127.0.0.1:4000:4000" # washboard
       - "127.0.0.1:443:8443" # httpserver HTTPS port
