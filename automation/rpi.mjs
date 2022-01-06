@@ -18,6 +18,5 @@ if (argv.up) {
   step("Starting wasmcloud");
   cd(`${os.homedir()}/wasmcloud-otp/host_core`); // TODO: make this better :-)
   await $`
-  	${[...Object.keys(ENV).map((k) => `${k}=${ENV[k]}`)]}
-	make run-interactive`;
+  	${[...Object.keys(ENV).map((k) => `${k}=${ENV[k]}`)]} make run-interactive`;
 }
