@@ -33,23 +33,21 @@ if (argv.up) {
 
 if (argv.start) {
   step("starting workloads");
-  //   await $`(cd ../actor && make push)`;
-  //   await $`(cd ../provider && make push)`;
-  await $`wash ctl start actor ${ACTOR.ref} --timeout 30 --constraint node=pi-01`;
+  await $`wash ctl start actor ${ACTOR.ref} --timeout-ms 30000 --constraint node=pi-01`;
 
   await $`wash ctl link put ${ACTOR.id} ${HTTPSERVER.id} ${HTTPSERVER.contract} ${HTTPSERVER.config}`;
-  await $`wash ctl start provider ${HTTPSERVER.ref} --link-name default --timeout 30 --constraint node=MacOS`;
+  await $`wash ctl start provider ${HTTPSERVER.ref} --link-name default --timeout-ms 30000 --constraint node=MacOS`;
 
   await $`wash ctl link put ${ACTOR.id} ${OLED.id} ${OLED.contract}`;
-  await $`wash ctl start provider ${OLED.ref} --link-name default --timeout 30 --constraint node=pi-02`;
+  await $`wash ctl start provider ${OLED.ref} --link-name default --timeout-ms 30000 --constraint node=pi-02`;
 }
 
 if (argv.stop) {
   step("stop workloads");
   const host = await getHost();
-  await $`wash ctl stop actor ${host} ${ACTOR.id} --timeout 30`;
-  await $`wash ctl stop provider ${host} ${OLED.id} default ${OLED.contract} --timeout 30`;
-  await $`wash ctl stop provider ${host} ${HTTPSERVER.id} default ${HTTPSERVER.contract} --timeout 30`;
+  await $`wash ctl stop actor ${host} ${ACTOR.id} --timeout-ms 30000`;
+  await $`wash ctl stop provider ${host} ${OLED.id} default ${OLED.contract} --timeout-ms 30000`;
+  await $`wash ctl stop provider ${host} ${HTTPSERVER.id} default ${HTTPSERVER.contract} --timeout-ms 30000`;
   await $`wash ctl link del ${ACTOR.id} ${OLED.contract}`;
   await $`wash ctl link del ${ACTOR.id} ${HTTPSERVER.contract}`;
 }
@@ -60,12 +58,18 @@ if (argv.down) {
 }
 
 if (argv.ip) {
-  const info = Object.values(os.networkInterfaces()).reduce(
-    (r, list) =>
+  const interfaces = os.networkInterfaces();
+  const names = Object.keys(interfaces);
+  const info = Object.values(interfaces).reduce(
+    (r, list, i) =>
       r.concat(
         list.reduce(
-          (rr, i) =>
-            rr.concat((i.family === "IPv4" && !i.internal && i.address) || []),
+          (rr, { family, internal, address }) =>
+            rr.concat(
+              (!internal &&
+                family === "IPv4" && { address, interface: names[i] }) ||
+                []
+            ),
           []
         )
       ),

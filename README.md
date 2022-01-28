@@ -46,8 +46,9 @@ The Wasm actor contains our "business" logic. It is signed and only given permis
 
    ```bash
    git clone git@github.com:wasmCloud/wasmcloud-otp.git
-   git checkout v0.51.4
-   cd wasmcloud-otp/host_core
+   cd wasmcloud-otp
+   git checkout v0.52.2
+   cd host_core
    make build
    ```
 
@@ -61,10 +62,10 @@ The Wasm actor contains our "business" logic. It is signed and only given permis
       3. `SCL` - pin 5
       4. `SDA` - pin 3
 
-6. find the IP address of your Mac
+6. find the IP address of your Mac (this may list several, in which case choose one on the interface to the subnet containing your Raspberry Pi devices)
 
    ```sh
-   ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p'
+   ./automation/macos.mjs --ip
    ```
 
    and add the Mac's IP address and hostname to `/etc/hosts` on each Pi, so that you can use the OCI registry hosted on the mac.
@@ -72,32 +73,16 @@ The Wasm actor contains our "business" logic. It is signed and only given permis
 7. run NATS server, wasmcloud, redis, and a local OCI registry, on the Mac
 
    ```sh
-   # if using Docker...
-   docker-compose up -d
-
-   # if using `lima` and `containerd`...
-   # (note you may need to install `vde_vmnet` as per
-   # https://github.com/lima-vm/lima/blob/master/docs/network.md
-   # to allow access to NATS from other machines)
-   lima nerdctl compose up -d
-   ```
-
-   Note the cluster seed and signer keys and add them to `~/wasmcloud-otp/host_core/.env` files on each Pi. The `.env` files should look like the following (replace the keys and the mac's host name).
-
-   ```bash
-   WASMCLOUD_CLUSTER_SEED=SCANP3E75PCKS5AF2UI56HBJ5HVGYVXL52ZJS35S6MVHOYB7LAAXSU6B24
-   WASMCLOUD_CLUSTER_ISSUERS=CDAM4OLLU5ZKQTWXYCGJ2IKMAFIHFCXTBIEOAGUDK26KUVJAH3RCXGUS
-   WASMCLOUD_CTL_HOST=stuarts-macbook-pro.local
-   WASMCLOUD_RPC_HOST=stuarts-macbook-pro.local
-   WASMCLOUD_PROV_RPC_HOST=stuarts-macbook-pro.local
-   WASMCLOUD_OCI_ALLOWED_INSECURE=registry:5001
+   ./automation/macos.mjs --up
    ```
 
 8. run a wasmCloud host on each Pi:
 
    ```bash
-   cd ~/wasmcloud-otp/host_core
-   make run
+   git clone git@github.com:redbadger/rpi-wasmcloud-demo.git
+   cd rpi-wasmcloud-demo
+
+   ./automation/rpi.mjs --up
    ```
 
 9. open the washboard in a browser on the mac (<http://localhost:4000>) for starting providers, actors and defining links.
@@ -110,8 +95,12 @@ The Wasm actor contains our "business" logic. It is signed and only given permis
 11. install `wash` on the Mac:
 
     ```sh
+    # using homebrew ...
     brew tap wasmcloud/wasmcloud
     brew install wash
+
+    # ... or with cargo
+    cargo install wash-cli
     ```
 
 12. install `wash` on the Pi that is used to build the provider:
@@ -133,15 +122,16 @@ Build the provider and the actor, and push them to an OCI registry.
 curl -fsSL https://fnm.vercel.app/install | bash
 source /home/pi/.bashrc
 
-# install zx
 fnm install 16
+
+# install zx
+npm i --global zx
 
 # install dirsh
 cargo install dirsh
 
 # build provider
-cd provider
-make build
+./provider/make.mjs --build --push
 
 # push to registry on mac (ensure there is an entry in /etc/hosts for `registry`, pointing at Mac)
 make push
@@ -151,11 +141,7 @@ make push
 
 ```sh
 # on the MacBook
-cd actor
-make
-
-# push to registry
-make push
+./actor/make.mjs --build --push
 ```
 
 ## Run

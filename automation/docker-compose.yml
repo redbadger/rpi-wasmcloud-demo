@@ -2,7 +2,7 @@ version: "3.5"
 services:
   nats:
     container_name: nats_container
-    image: nats:2.6.4
+    image: nats:2.7.1
     ports:
       - "4222:4222"
       - "6222:6222"
@@ -19,16 +19,16 @@ services:
     restart: unless-stopped
   wasmcloud:
     container_name: wasmcloud_container
-    image: wasmcloud/wasmcloud_host:0.51.4
+    image: wasmcloud/wasmcloud_host:0.52.2
     environment:
       LC_ALL: en_US.UTF-8
-      WASMCLOUD_OCI_ALLOWED_INSECURE: registry:5001
-      WASMCLOUD_RPC_HOST: nats
-      WASMCLOUD_CTL_HOST: nats
-      WASMCLOUD_PROV_RPC_HOST: nats
+      HOST_NODE: MacOS
       WASMCLOUD_CLUSTER_SEED: ${WASMCLOUD_CLUSTER_SEED}
       WASMCLOUD_CLUSTER_ISSUERS: ${WASMCLOUD_CLUSTER_ISSUERS}
-      HOST_NODE: MacOS
+      WASMCLOUD_CTL_HOST: nats
+      WASMCLOUD_OCI_ALLOWED_INSECURE: registry:5001
+      WASMCLOUD_PROV_RPC_HOST: nats
+      WASMCLOUD_RPC_HOST: nats
     ports:
       - "127.0.0.1:4000:4000" # washboard
       - "127.0.0.1:443:8443" # httpserver HTTPS port

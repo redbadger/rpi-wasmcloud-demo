@@ -16,6 +16,7 @@ const config = {
 
 setColors();
 
+cd(__dirname);
 const { name: project, version } = await getProject();
 const revision = 0;
 const build = argv.debug ? "debug" : "release";
