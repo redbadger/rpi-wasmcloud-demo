@@ -3,10 +3,6 @@
 import { step } from "./lib.mjs";
 
 const REGISTRY = "registry:5001";
-const WASMCLOUD_CLUSTER_SEED =
-  "SCANP3E75PCKS5AF2UI56HBJ5HVGYVXL52ZJS35S6MVHOYB7LAAXSU6B24";
-const WASMCLOUD_CLUSTER_ISSUERS =
-  "CDAM4OLLU5ZKQTWXYCGJ2IKMAFIHFCXTBIEOAGUDK26KUVJAH3RCXGUS";
 const ACTOR = {
   id: "MC5QO34YH43RO6R3AMM3I4XC7ET2KXEMXLW4CX3XFQR4XWGF6QREPPBH",
   ref: `${REGISTRY}/oled_actor:0.1.1`,
@@ -25,10 +21,7 @@ const OLED = {
 
 if (argv.up) {
   step("Starting containers");
-  await $`
-  	WASMCLOUD_CLUSTER_SEED=${WASMCLOUD_CLUSTER_SEED} \
-	WASMCLOUD_CLUSTER_ISSUERS=${WASMCLOUD_CLUSTER_ISSUERS} \
-	docker compose up -d`;
+  await $`tilt up`;
 }
 
 if (argv.start) {
@@ -54,7 +47,7 @@ if (argv.stop) {
 
 if (argv.down) {
   step("stopping containers");
-  await $`docker compose down`;
+  await $`tilt down`;
 }
 
 if (argv.ip) {

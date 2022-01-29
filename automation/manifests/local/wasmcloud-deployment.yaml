@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wasmcloud
+spec:
+  selector:
+    matchLabels:
+      app: wasmcloud
+  template:
+    spec:
+      containers:
+        - name: wasmcloud-container
+          env:
+            - name: WASMCLOUD_CLUSTER_ISSUERS
+              value: CDAM4OLLU5ZKQTWXYCGJ2IKMAFIHFCXTBIEOAGUDK26KUVJAH3RCXGUS
+            - name: WASMCLOUD_CLUSTER_SEED
+              value: SCANP3E75PCKS5AF2UI56HBJ5HVGYVXL52ZJS35S6MVHOYB7LAAXSU6B24
