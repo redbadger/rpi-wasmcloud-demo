@@ -11,3 +11,4 @@ spec:
       targetPort: 5001
   selector:
     app: registry
+  type: LoadBalancer

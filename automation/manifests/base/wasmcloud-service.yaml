@@ -6,14 +6,12 @@ metadata:
   name: wasmcloud
 spec:
   ports:
-    - name: "4000"
+    - name: "admin-ui"
       port: 4000
       targetPort: 4000
-    - name: "443"
-      port: 443
-      targetPort: 8443
-    - name: "8080"
+    - name: "http-server"
       port: 8080
       targetPort: 8080
   selector:
     app: wasmcloud
+  type: LoadBalancer

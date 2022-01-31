@@ -22,7 +22,6 @@ spec:
             - name: LC_ALL
               value: en_US.UTF-8
             - name: WASMCLOUD_CLUSTER_ISSUERS
-              value:
             - name: WASMCLOUD_CLUSTER_SEED
             - name: WASMCLOUD_CTL_HOST
               value: nats
@@ -37,12 +36,11 @@ spec:
           ports:
             - containerPort: 4000
             - containerPort: 8080
-            - containerPort: 8443
           resources:
             limits:
-              memory: "200Mi"
+              memory: "2Gi"
               cpu: "1"
             requests:
-              memory: "100Mi"
+              memory: "1Gi"
               cpu: "0.5"
       restartPolicy: Always
