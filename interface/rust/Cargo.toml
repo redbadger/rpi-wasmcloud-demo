@@ -1,10 +1,10 @@
 [package]
 authors = ["stuart.harris@red-badger.com"]
-description = "Interface library for the oled-ssd1306 capability, "
+description = "Interface library for the oled capability, "
 edition = "2021"
 license = "MIT"
-name = "oled-ssd1306-interface"
-version = "0.1.0"
+name = "oled-interface"
+version = "0.0.1"
 
 # when publishing to crates.io, freeze src by omitting build.rs
 exclude = ["build.rs"]

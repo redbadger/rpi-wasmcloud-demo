@@ -9,7 +9,7 @@ import {
 } from "../automation/lib.mjs";
 
 const config = {
-  capability: "red-badger:oled-ssd1306",
+  capability: "redbadger:oled",
   vendor: "RedBadger",
   registry: "registry:5001",
 };
@@ -40,6 +40,7 @@ if (argv.build) {
     await $`wash par create ${[
       "--arch",
       getArch(),
+      //   "x86_64-linux",
       "--binary",
       source,
       "--capid",

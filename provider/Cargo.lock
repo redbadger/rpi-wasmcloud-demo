@@ -1662,8 +1662,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "41af26158b0f5530f7b79955006c2727cd23d0d8e7c3109dc316db0a919784dd"
 
 [[package]]
-name = "oled-ssd1306-interface"
-version = "0.1.0"
+name = "oled-interface"
+version = "0.0.1"
 dependencies = [
  "async-trait",
  "futures 0.3.19",
@@ -1675,8 +1675,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "oled-ssd1306-provider"
-version = "0.1.0"
+name = "oled-provider"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1685,9 +1685,11 @@ dependencies = [
  "futures 0.3.19",
  "linux-embedded-hal",
  "log",
- "oled-ssd1306-interface",
+ "oled-interface",
  "ssd1306",
+ "tokio",
  "wasmbus-rpc",
+ "wasmcloud-test-util",
 ]
 
 [[package]]
@@ -3222,6 +3224,43 @@ dependencies = [
  "wascap",
  "wasmbus-macros",
  "weld-codegen",
+]
+
+[[package]]
+name = "wasmcloud-interface-testing"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fce471a0da171e8bf9f76af6ae8b295c510d34ef45ddf1ab7a235bda627510e4"
+dependencies = [
+ "async-trait",
+ "regex",
+ "serde",
+ "serde_bytes",
+ "serde_json",
+ "wasmbus-rpc",
+ "weld-codegen",
+]
+
+[[package]]
+name = "wasmcloud-test-util"
+version = "0.1.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8c50d01ff3b125f956441b4d7c257673703be0ddb757a17f72a01c680ef52816"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64",
+ "futures 0.3.19",
+ "log",
+ "regex",
+ "serde",
+ "serde_json",
+ "termcolor",
+ "tokio",
+ "toml",
+ "wascap",
+ "wasmbus-rpc",
+ "wasmcloud-interface-testing",
 ]
 
 [[package]]

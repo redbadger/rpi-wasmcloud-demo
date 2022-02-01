@@ -4,7 +4,7 @@ import { getProject, ifChanged, setColors, step } from "../automation/lib.mjs";
 
 const config = {
   claims: [
-    "red-badger:oled-ssd1306",
+    "redbadger:oled",
     "wasmcloud:builtin:logging",
     "wasmcloud:builtin:numbergen",
     "wasmcloud:httpserver",

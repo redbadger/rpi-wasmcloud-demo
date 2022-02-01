@@ -18,13 +18,13 @@ pub struct Request {
     pub text: String,
 }
 
-/// wasmbus.contractId: red-badger:oled-ssd1306
+/// wasmbus.contractId: redbadger:oled
 /// wasmbus.providerReceive
 #[async_trait]
 pub trait Oled {
     /// returns the capability contract id for this interface
     fn contract_id() -> &'static str {
-        "red-badger:oled-ssd1306"
+        "redbadger:oled"
     }
     async fn update(&self, ctx: &Context, arg: &Request) -> RpcResult<()>;
     async fn clear(&self, ctx: &Context) -> RpcResult<()>;
@@ -83,23 +83,19 @@ impl<T: Transport> OledSender<T> {
 #[cfg(target_arch = "wasm32")]
 impl OledSender<wasmbus_rpc::actor::prelude::WasmHost> {
     /// Constructs a client for sending to a Oled provider
-    /// implementing the 'red-badger:oled-ssd1306' capability contract, with the "default" link
+    /// implementing the 'redbadger:oled' capability contract, with the "default" link
     pub fn new() -> Self {
-        let transport = wasmbus_rpc::actor::prelude::WasmHost::to_provider(
-            "red-badger:oled-ssd1306",
-            "default",
-        )
-        .unwrap();
+        let transport =
+            wasmbus_rpc::actor::prelude::WasmHost::to_provider("redbadger:oled", "default")
+                .unwrap();
         Self { transport }
     }
 
     /// Constructs a client for sending to a Oled provider
-    /// implementing the 'red-badger:oled-ssd1306' capability contract, with the specified link name
+    /// implementing the 'redbadger:oled' capability contract, with the specified link name
     pub fn new_with_link(link_name: &str) -> wasmbus_rpc::RpcResult<Self> {
-        let transport = wasmbus_rpc::actor::prelude::WasmHost::to_provider(
-            "red-badger:oled-ssd1306",
-            link_name,
-        )?;
+        let transport =
+            wasmbus_rpc::actor::prelude::WasmHost::to_provider("redbadger:oled", link_name)?;
         Ok(Self { transport })
     }
 }

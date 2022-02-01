@@ -1,6 +1,6 @@
 use display::say;
 use log::info;
-use oled_ssd1306_interface::{Oled, OledReceiver, Request};
+use oled_interface::{Oled, OledReceiver, Request};
 use wasmbus_rpc::provider::prelude::*;
 
 mod display;

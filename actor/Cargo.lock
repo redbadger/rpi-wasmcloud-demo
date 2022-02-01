@@ -1421,8 +1421,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "oled-ssd1306-interface"
-version = "0.1.0"
+name = "oled-interface"
+version = "0.0.1"
 dependencies = [
  "async-trait",
  "futures 0.3.19",
@@ -1435,11 +1435,11 @@ dependencies = [
 
 [[package]]
 name = "oled_actor"
-version = "0.1.1"
+version = "0.0.1"
 dependencies = [
  "async-trait",
  "futures 0.3.19",
- "oled-ssd1306-interface",
+ "oled-interface",
  "once_cell",
  "wasmbus-rpc",
  "wasmcloud-interface-httpserver",

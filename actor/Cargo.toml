@@ -2,7 +2,7 @@
 authors = ["Stuart Harris <stuart.harris@red-badger.com>"]
 edition = "2018"
 name = "oled_actor"
-version = "0.1.1"
+version = "0.0.1"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -11,7 +11,7 @@ name = "oled_actor"
 [dependencies]
 async-trait = "0.1.52"
 futures = "0.3.19"
-oled-ssd1306-interface = {path = "../interface/rust"}
+oled-interface = {path = "../interface/rust"}
 once_cell = "1.9.0"
 wasmbus-rpc = "0.6.1"
 wasmcloud-interface-httpserver = "0.3.0"

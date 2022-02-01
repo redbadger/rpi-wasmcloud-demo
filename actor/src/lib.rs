@@ -1,4 +1,4 @@
-use oled_ssd1306_interface::{Oled, OledSender, Request};
+use oled_interface::{Oled, OledSender, Request};
 use once_cell::sync::OnceCell;
 use std::str;
 use wasmbus_rpc::actor::prelude::*;
