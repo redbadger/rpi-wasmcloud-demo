@@ -1,14 +1,10 @@
-// This file is generated automatically using wasmcloud-weld and smithy model definitions
+// This file is generated automatically using wasmcloud/weld-codegen and smithy model definitions
 //
 
-#![allow(clippy::ptr_arg)]
-#[allow(unused_imports)]
+#![allow(unused_imports, clippy::ptr_arg, clippy::needless_lifetimes)]
 use async_trait::async_trait;
-#[allow(unused_imports)]
 use serde::{Deserialize, Serialize};
-#[allow(unused_imports)]
-use std::{borrow::Cow, string::ToString};
-#[allow(unused_imports)]
+use std::{borrow::Cow, io::Write, string::ToString};
 use wasmbus_rpc::{
     deserialize, serialize, Context, Message, MessageDispatch, RpcError, RpcResult, SendOpts,
     Timestamp, Transport,
@@ -22,14 +18,13 @@ pub struct Request {
     pub text: String,
 }
 
-/// wasmbus.contractId: red-badger:oled-ssd1306
+/// wasmbus.contractId: redbadger:oled
 /// wasmbus.providerReceive
-/// wasmbus.actorReceive
 #[async_trait]
 pub trait Oled {
     /// returns the capability contract id for this interface
     fn contract_id() -> &'static str {
-        "red-badger:oled-ssd1306"
+        "redbadger:oled"
     }
     async fn update(&self, ctx: &Context, arg: &Request) -> RpcResult<()>;
     async fn clear(&self, ctx: &Context) -> RpcResult<()>;
@@ -44,19 +39,19 @@ pub trait OledReceiver: MessageDispatch + Oled {
             "Update" => {
                 let value: Request = deserialize(message.arg.as_ref())
                     .map_err(|e| RpcError::Deser(format!("message '{}': {}", message.method, e)))?;
-                let resp = Oled::update(self, ctx, &value).await?;
-                let buf = Cow::Owned(serialize(&resp)?);
+                let _resp = Oled::update(self, ctx, &value).await?;
+                let buf = Vec::new();
                 Ok(Message {
                     method: "Oled.Update",
-                    arg: buf,
+                    arg: Cow::Owned(buf),
                 })
             }
             "Clear" => {
-                let resp = Oled::clear(self, ctx).await?;
-                let buf = Cow::Owned(serialize(&resp)?);
+                let _resp = Oled::clear(self, ctx).await?;
+                let buf = Vec::new();
                 Ok(Message {
                     method: "Oled.Clear",
-                    arg: buf,
+                    arg: Cow::Owned(buf),
                 })
             }
             _ => Err(RpcError::MethodNotHandled(format!(
@@ -79,49 +74,28 @@ impl<T: Transport> OledSender<T> {
     pub fn via(transport: T) -> Self {
         Self { transport }
     }
-}
 
-#[cfg(not(target_arch = "wasm32"))]
-impl<'send> OledSender<wasmbus_rpc::provider::ProviderTransport<'send>> {
-    /// Constructs a Sender using an actor's LinkDefinition,
-    /// Uses the provider's HostBridge for rpc
-    pub fn for_actor(ld: &'send wasmbus_rpc::core::LinkDefinition) -> Self {
-        Self {
-            transport: wasmbus_rpc::provider::ProviderTransport::new(ld, None),
-        }
-    }
-}
-#[cfg(target_arch = "wasm32")]
-impl OledSender<wasmbus_rpc::actor::prelude::WasmHost> {
-    /// Constructs a client for actor-to-actor messaging
-    /// using the recipient actor's public key
-    pub fn to_actor(actor_id: &str) -> Self {
-        let transport =
-            wasmbus_rpc::actor::prelude::WasmHost::to_actor(actor_id.to_string()).unwrap();
-        Self { transport }
+    pub fn set_timeout(&self, interval: std::time::Duration) {
+        self.transport.set_timeout(interval);
     }
 }
 
 #[cfg(target_arch = "wasm32")]
 impl OledSender<wasmbus_rpc::actor::prelude::WasmHost> {
     /// Constructs a client for sending to a Oled provider
-    /// implementing the 'red-badger:oled-ssd1306' capability contract, with the "default" link
+    /// implementing the 'redbadger:oled' capability contract, with the "default" link
     pub fn new() -> Self {
-        let transport = wasmbus_rpc::actor::prelude::WasmHost::to_provider(
-            "red-badger:oled-ssd1306",
-            "default",
-        )
-        .unwrap();
+        let transport =
+            wasmbus_rpc::actor::prelude::WasmHost::to_provider("redbadger:oled", "default")
+                .unwrap();
         Self { transport }
     }
 
     /// Constructs a client for sending to a Oled provider
-    /// implementing the 'red-badger:oled-ssd1306' capability contract, with the specified link name
+    /// implementing the 'redbadger:oled' capability contract, with the specified link name
     pub fn new_with_link(link_name: &str) -> wasmbus_rpc::RpcResult<Self> {
-        let transport = wasmbus_rpc::actor::prelude::WasmHost::to_provider(
-            "red-badger:oled-ssd1306",
-            link_name,
-        )?;
+        let transport =
+            wasmbus_rpc::actor::prelude::WasmHost::to_provider("redbadger:oled", link_name)?;
         Ok(Self { transport })
     }
 }
@@ -129,14 +103,14 @@ impl OledSender<wasmbus_rpc::actor::prelude::WasmHost> {
 impl<T: Transport + std::marker::Sync + std::marker::Send> Oled for OledSender<T> {
     #[allow(unused)]
     async fn update(&self, ctx: &Context, arg: &Request) -> RpcResult<()> {
-        let arg = serialize(arg)?;
+        let buf = serialize(arg)?;
         let resp = self
             .transport
             .send(
                 ctx,
                 Message {
                     method: "Oled.Update",
-                    arg: Cow::Borrowed(&arg),
+                    arg: Cow::Borrowed(&buf),
                 },
                 None,
             )
@@ -145,14 +119,14 @@ impl<T: Transport + std::marker::Sync + std::marker::Send> Oled for OledSender<T
     }
     #[allow(unused)]
     async fn clear(&self, ctx: &Context) -> RpcResult<()> {
-        let arg = *b"";
+        let buf = *b"";
         let resp = self
             .transport
             .send(
                 ctx,
                 Message {
                     method: "Oled.Clear",
-                    arg: Cow::Borrowed(&arg),
+                    arg: Cow::Borrowed(&buf),
                 },
                 None,
             )

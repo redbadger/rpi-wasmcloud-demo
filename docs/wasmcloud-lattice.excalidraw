@@ -445,7 +445,7 @@
       ],
       "fontSize": 20,
       "fontFamily": 1,
-      "text": "red-badger:oled-ssd1306",
+      "text": "redbadger:oled",
       "baseline": 18,
       "textAlign": "left",
       "verticalAlign": "top"

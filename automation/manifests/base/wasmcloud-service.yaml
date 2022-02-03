@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: wasmcloud
+  name: wasmcloud
+spec:
+  ports:
+    - name: "admin-ui"
+      port: 4000
+      targetPort: 4000
+    - name: "http-server"
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: wasmcloud
+  type: LoadBalancer

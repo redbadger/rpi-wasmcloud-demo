@@ -9,17 +9,15 @@
 # The namespaces(s) that will be generated for this library are indicated
 # in the per-language file settings later in this file.
 [[models]]
+files = ["oled.smithy"]
 path = "."
-files = [ "oled_ssd_1306.smithy" ]
-
 
 [[models]]
 # Location of dependencies may be either a path to a directory, or a url prefix
 # If a relative path is used, it is relative to the location of this codegen.toml
 #path = "/path/to/my-interfaces"
+files = ["wasmcloud-core.smithy", "wasmcloud-model.smithy"]
 url = "https://wasmcloud.github.io/interfaces/idl/org.wasmcloud"
-files = [ "wasmcloud-core.smithy", "wasmcloud-model.smithy" ]
-
 
 ##
 ## HTML documentation output
@@ -39,7 +37,6 @@ output_dir = "html"
 
 # whether to use minified tailwind.css (default false)
 minified = true
-
 
 ##
 ## Rust language output
@@ -65,5 +62,5 @@ output_dir = "rust"
 # and importing each of them into src/lib.rs
 
 [[rust.files]]
-path = "src/oled_ssd_1306.rs"
-namespace = "com.redbadger.oled_ssd_1306"
+namespace = "com.redbadger.interfaces.oled"
+path = "src/oled.rs"

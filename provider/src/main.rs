@@ -1,6 +1,6 @@
 use display::say;
-use log::debug;
-use oled_ssd1306_interface::{Oled, OledReceiver, Request};
+use log::info;
+use oled_interface::{Oled, OledReceiver, Request};
 use wasmbus_rpc::provider::prelude::*;
 
 mod display;
@@ -24,7 +24,7 @@ impl ProviderHandler for OledProvider {}
 impl Oled for OledProvider {
     /// updates the text on the oled display
     async fn update(&self, _ctx: &Context, req: &Request) -> RpcResult<()> {
-        debug!("processing request update({})", req.text);
+        info!("processing request update({})", req.text);
         say(&req.text)
             .map_err(|e| RpcError::Other(format!("error writing to display: {:?}", e)))?;
         Ok(())
@@ -32,7 +32,7 @@ impl Oled for OledProvider {
 
     /// clears the oled display
     async fn clear(&self, _ctx: &Context) -> RpcResult<()> {
-        debug!("processing request clear()");
+        info!("processing request clear()");
         say("").map_err(|e| RpcError::Other(format!("error writing to display: {:?}", e)))?;
         Ok(())
     }

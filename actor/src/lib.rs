@@ -1,4 +1,4 @@
-use oled_ssd1306_interface::{Oled, OledSender, Request};
+use oled_interface::{Oled, OledSender, Request};
 use once_cell::sync::OnceCell;
 use std::str;
 use wasmbus_rpc::actor::prelude::*;
@@ -14,13 +14,9 @@ struct OledActor {}
 
 #[async_trait]
 impl HttpServer for OledActor {
-    async fn handle_request(
-        &self,
-        ctx: &Context,
-        req: &HttpRequest,
-    ) -> std::result::Result<HttpResponse, RpcError> {
+    async fn handle_request(&self, ctx: &Context, req: &HttpRequest) -> RpcResult<HttpResponse> {
         let instance = match INSTANCE.get() {
-            Some(instance) => instance.to_owned(),
+            Some(instance) => instance.clone(),
             None => {
                 let instance = NumberGenSender::new().generate_guid(ctx).await?;
                 INSTANCE.set(instance.clone())?;

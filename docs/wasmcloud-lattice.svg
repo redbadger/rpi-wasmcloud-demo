@@ -77,7 +77,7 @@
 	</g>
 	<g transform="translate(533.6944844893928 626.25) rotate(0 117 13)"><text x="0" y="18"
 			font-family="Virgil, Segoe UI Emoji" font-size="20px" fill="#000000" text-anchor="start"
-			style="white-space: pre;" direction="ltr">red-badger:oled-ssd1306</text></g>
+			style="white-space: pre;" direction="ltr">redbadger:oled</text></g>
 	<g stroke-linecap="round">
 		<g transform="translate(477.1730911131581 258.76740567535165) rotate(0 8.820815785784134 -75.63320207149064)">
 			<path d="M0 0 C2.94 -25.21, 14.7 -126.06, 17.64 -151.27 M0 0 C2.94 -25.21, 14.7 -126.06, 17.64 -151.27"

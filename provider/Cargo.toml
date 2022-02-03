@@ -1,24 +1,29 @@
 [package]
-edition = "2018"
+edition = "2021"
 license = "MIT"
-name = "oled-ssd1306-provider"
+name = "oled-provider"
 resolver = "2"
-version = "0.1.0"
+version = "0.0.1"
 
 [dependencies]
-anyhow = "1.0.44"
-async-trait = "0.1.51"
+anyhow = "1.0.53"
+async-trait = "0.1.52"
 embedded-graphics = "0.7.1"
 embedded-text = "0.5.0"
-futures = "0.3.17"
+futures = "0.3.19"
 log = "0.4.14"
-oled-ssd1306-interface = {path = "../interface/rust"}
+oled-interface = {path = "../interface/rust"}
 ssd1306 = "0.7.0"
-wasmbus-rpc = "0.4.4"
+wasmbus-rpc = "0.6.1"
 
 [target.'cfg(target_arch = "aarch64")'.dependencies]
-linux-embedded-hal = "0.3.1"
+linux-embedded-hal = "0.3.2"
+
+# test dependencies
+[dev-dependencies]
+tokio = {version = "1", features = ["full"]}
+wasmcloud-test-util = "0.1.9"
 
 [[bin]]
-name = "oled-ssd1306-provider"
+name = "oled-provider"
 path = "src/main.rs"

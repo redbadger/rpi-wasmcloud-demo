@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wasmcloud
+  name: wasmcloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wasmcloud
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: wasmcloud
+    spec:
+      containers:
+        - env:
+            - name: HOST_NODE
+              value: MacOS
+            - name: LC_ALL
+              value: en_US.UTF-8
+            - name: WASMCLOUD_CLUSTER_ISSUERS
+            - name: WASMCLOUD_CLUSTER_SEED
+            - name: WASMCLOUD_CTL_HOST
+              value: nats
+            - name: WASMCLOUD_OCI_ALLOWED_INSECURE
+              value: registry:5001
+            - name: WASMCLOUD_PROV_RPC_HOST
+              value: nats
+            - name: WASMCLOUD_RPC_HOST
+              value: nats
+          image: wasmcloud/wasmcloud_host:0.52.2
+          name: wasmcloud-container
+          ports:
+            - containerPort: 4000
+            - containerPort: 8080
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+            requests:
+              memory: "1Gi"
+              cpu: "0.5"
+      restartPolicy: Always
