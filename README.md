@@ -16,74 +16,74 @@ The Wasm actor contains our "business" logic. It is signed and only given permis
 
 ## Setup
 
-1. make sure I2C is enabled on the Pi with the Oled display attached.
+1. make sure I2C is enabled on `pi-01` (the Pi with the Oled display attached).
 
-   ```bash
-   sudo raspi-config
-   ```
+    ```bash
+    sudo raspi-config
+    ```
 
 2. install Rust on each Pi
 
-   ```bash
-   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-   ```
+    ```bash
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    ```
 
 3. install Elixir on each Pi
 
-   ```bash
-   echo "deb https://packages.erlang-solutions.com/debian buster contrib" \
-   | sudo tee /etc/apt/sources.list.d/erlang-solutions.list
+    ```bash
+    echo "deb https://packages.erlang-solutions.com/debian buster contrib" \
+    | sudo tee /etc/apt/sources.list.d/erlang-solutions.list
 
-   wget https://packages.erlang-solutions.com/debian/erlang_solutions.asc \
-   && sudo apt-key add erlang_solutions.asc \
-   && rm erlang_solutions.asc
+    wget https://packages.erlang-solutions.com/debian/erlang_solutions.asc \
+    && sudo apt-key add erlang_solutions.asc \
+    && rm erlang_solutions.asc
 
-   sudo apt update
-   sudo apt install erlang-parsetools erlang-dev elixir
-   ```
+    sudo apt update
+    sudo apt install erlang-parsetools erlang-dev elixir
+    ```
 
 4. clone the `wasmcloud-otp` repo, then build `host_core` on each Pi
 
-   ```bash
-   git clone git@github.com:wasmCloud/wasmcloud-otp.git
-   cd wasmcloud-otp
-   git checkout v0.52.2
-   cd host_core
-   make build
-   ```
+    ```bash
+    git clone git@github.com:wasmCloud/wasmcloud-otp.git
+    cd wasmcloud-otp
+    git checkout v0.52.2
+    cd host_core
+    make build
+    ```
 
-5. install the OLED display with SSD1306 display driver, on one Pi
+5. install the OLED display with SSD1306 display driver, on `pi-01`
 
-   1. [MakerHawk OLED Display Module, SSD1306, 128x64](https://smile.amazon.co.uk/gp/product/B0777HHQDT)
-   2. Header pins need soldering onto the OLED board
-   3. Jumper leads to these pins on the Pi:
-      1. `VCC` - pin 1
-      2. `GND` - pin 6
-      3. `SCL` - pin 5
-      4. `SDA` - pin 3
+    1. [MakerHawk OLED Display Module, SSD1306, 128x64](https://smile.amazon.co.uk/gp/product/B0777HHQDT)
+    2. Header pins need soldering onto the OLED board
+    3. Jumper leads to these pins on the Pi:
+        1. `VCC` - pin 1
+        2. `GND` - pin 6
+        3. `SCL` - pin 5
+        4. `SDA` - pin 3
 
 6. find the IP address of your Mac (this may list several, in which case choose one on the interface to the subnet containing your Raspberry Pi devices)
 
-   ```sh
-   ./automation/macos.mjs --ip
-   ```
+    ```sh
+    ./automation/macos.mjs --ip
+    ```
 
-   and add the Mac's IP address and hostname to `/etc/hosts` on each Pi, so that you can use the OCI registry hosted on the mac.
+    and add the Mac's IP address and hostname to `/etc/hosts` on each Pi, so that you can use the OCI registry hosted on the mac.
 
 7. run NATS server, wasmcloud, redis, and a local OCI registry, on the Mac
 
-   ```sh
-   ./automation/macos.mjs --up
-   ```
+    ```sh
+    ./automation/macos.mjs --up
+    ```
 
 8. run a wasmCloud host on each Pi:
 
-   ```bash
-   git clone git@github.com:redbadger/rpi-wasmcloud-demo.git
-   cd rpi-wasmcloud-demo
+    ```bash
+    git clone git@github.com:redbadger/rpi-wasmcloud-demo.git
+    cd rpi-wasmcloud-demo
 
-   ./automation/rpi.mjs --up
-   ```
+    ./automation/rpi.mjs --up
+    ```
 
 9. open the washboard in a browser on the mac (<http://localhost:4000>) for starting providers, actors and defining links.
 
@@ -116,7 +116,7 @@ Build the provider and the actor, and push them to an OCI registry.
 ### `provider`
 
 ```sh
-# on a Raspberry Pi, e.g. via vscode remote
+# on a Raspberry Pi, e.g. via ssh, or vscode remote
 
 # install node
 curl -fsSL https://fnm.vercel.app/install | bash
@@ -146,10 +146,13 @@ make push
 
 ## Run
 
-The script ([./scripts/start.sh](./scripts/start.sh)) still needs updating, so for now, use the washboard to start the oled provider (on `pi_01`), http provider (on mac), actor (`pi_02`, or wherever) and create links between them. Note that when creating the link for the http server provider, use `address=0.0.0.0:8080` (or similar) if you are hosting wasmCloud in docker on the mac.
+```sh
+./automation/macos.mjs --start
+```
+
+## Test
 
 ```sh
-
 # to test
 curl -d 'Hello from wasmcloud!' http://127.0.0.1:8080
 curl -X DELETE http://127.0.0.1:8080
