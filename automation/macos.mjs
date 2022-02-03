@@ -21,7 +21,8 @@ const OLED = {
 
 if (argv.up) {
     step("Starting containers");
-    await $`tilt up`;
+    // await $`tilt up`;
+    await $`docker-compose up -d`;
 }
 
 if (argv.start) {
@@ -63,7 +64,8 @@ if (argv.stop) {
 
 if (argv.down) {
     step("stopping containers");
-    await $`tilt down`;
+    // await $`tilt down`;
+    await $`docker-compose down`;
 }
 
 if (argv.ip) {

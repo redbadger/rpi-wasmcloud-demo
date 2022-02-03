@@ -1,0 +1,29 @@
+version: "3.1"
+services:
+  nats:
+    image: nats:2.7.1
+    ports:
+      - "4222:4222"
+      - "6222:6222"
+      - "8222:8222"
+    command: ["-js"]
+  registry:
+    image: registry:2.7
+    ports:
+      - "5001:5001"
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:5001
+  wasmcloud:
+    image: wasmcloud/wasmcloud_host:0.52.2
+    environment:
+      HOST_NODE: MacOS
+      LC_ALL: en_US.UTF-8
+      WASMCLOUD_CLUSTER_ISSUERS: CDAM4OLLU5ZKQTWXYCGJ2IKMAFIHFCXTBIEOAGUDK26KUVJAH3RCXGUS
+      WASMCLOUD_CLUSTER_SEED: SCANP3E75PCKS5AF2UI56HBJ5HVGYVXL52ZJS35S6MVHOYB7LAAXSU6B24
+      WASMCLOUD_CTL_HOST: nats
+      WASMCLOUD_OCI_ALLOWED_INSECURE: registry:5001
+      WASMCLOUD_PROV_RPC_HOST: nats
+      WASMCLOUD_RPC_HOST: nats
+    ports:
+      - "4000:4000"
+      - "8080-8089:8080-8089" # Allows exposing examples on ports 8080-8089
