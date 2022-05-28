@@ -1,4 +1,4 @@
-package interface
+package provider
 
 import (
 	"dagger.io/dagger"
@@ -9,7 +9,7 @@ import (
 // build with cargo
 #Build: {
 	// source code
-	source: dagger.#FS
+	sources: [path=string]: dagger.#FS
 
 	_run: docker.#Build & {
 		steps: [
@@ -23,10 +23,11 @@ import (
 					args: ["component", "add", "rustfmt"]
 				}
 			},
-
-			docker.#Copy & {
-				dest:     "/src"
-				contents: source
+			for path, source in sources {
+				docker.#Copy & {
+					dest:     "/src/" + path
+					contents: source
+				}
 			},
 
 			docker.#Run & {
@@ -34,14 +35,14 @@ import (
 					name: "cargo"
 					args: ["build"]
 				}
-				workdir: "/src/rust"
+				workdir: "/src/provider"
 			},
 		]
 	}
 	contents: core.#Copy & {
 		input:    dagger.#Scratch
 		contents: _run.output.rootfs
-		source:   "/src/rust/target/*"
-		include: ["liboled_interface.*"]
+		source:   "/src/provider/target/debug/*"
+		include: ["provider"]
 	}
 }
