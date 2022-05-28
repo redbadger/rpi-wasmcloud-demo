@@ -5,6 +5,7 @@ import (
 
 	// "dev@red-badger.com/rpi-wasmcloud-demo/interface"
 	"dev@red-badger.com/rpi-wasmcloud-demo/provider"
+	"dev@red-badger.com/rpi-wasmcloud-demo/actor"
 )
 
 dagger.#Plan & {
@@ -12,27 +13,32 @@ dagger.#Plan & {
 		filesystem: {
 			"./interface": read: {
 				contents: dagger.#FS
-				exclude: [
-					"build",
-					"rust/target",
-				]
+				exclude: ["rust/target"]
 			}
 			"./provider": read: {
 				contents: dagger.#FS
-				exclude: [
-					"build",
-					"target",
-				]
+				exclude: ["target"]
 			}
-			"./build": write: contents: actions.build.contents.output
+			"./actor": read: {
+				contents: dagger.#FS
+				exclude: ["target"]
+			}
+			"./build/provider": write: contents: actions.buildProvider.contents.output
+			"./build/actor": write: contents:    actions.buildActor.contents.output
 		}
 		env: {}
 	}
 	actions: {
-		build: provider.#Build & {
+		buildProvider: provider.#Build & {
 			sources: {
 				interface: client.filesystem."./interface".read.contents
 				provider:  client.filesystem."./provider".read.contents
+			}
+		}
+		buildActor: actor.#Build & {
+			sources: {
+				interface: client.filesystem."./interface".read.contents
+				actor:     client.filesystem."./actor".read.contents
 			}
 		}
 	}
