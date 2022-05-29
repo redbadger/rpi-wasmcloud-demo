@@ -3,7 +3,7 @@ package main
 import (
 	"dagger.io/dagger"
 
-	// "dev@red-badger.com/rpi-wasmcloud-demo/interface"
+	"dev@red-badger.com/rpi-wasmcloud-demo/interface"
 	"dev@red-badger.com/rpi-wasmcloud-demo/provider"
 	"dev@red-badger.com/rpi-wasmcloud-demo/actor"
 )
@@ -23,12 +23,16 @@ dagger.#Plan & {
 				contents: dagger.#FS
 				exclude: ["target"]
 			}
-			"./build/provider": write: contents: actions.buildProvider.contents.output
-			"./build/actor": write: contents:    actions.buildActor.contents.output
+			"./interface/build": write: contents: actions.buildInterface.contents.output
+			"./provider/build": write: contents:  actions.buildProvider.contents.output
+			"./actor/build": write: contents:     actions.buildActor.contents.output
 		}
 		env: {}
 	}
 	actions: {
+		buildInterface: interface.#Build & {
+			source: client.filesystem."./interface".read.contents
+		}
 		buildProvider: provider.#Build & {
 			sources: {
 				interface: client.filesystem."./interface".read.contents
