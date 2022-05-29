@@ -7,3 +7,7 @@ build/
 **/*.rs.bk
 
 cue.mod
+
+node_modules
+.turbo
+.pnpm-debug.log
