@@ -1,10 +1,27 @@
 lockfileVersion: 5.4
 
-specifiers:
-  turbo: ^1.2.14
+importers:
 
-devDependencies:
-  turbo: 1.2.14
+  .:
+    specifiers:
+      turbo: ^1.2.14
+    devDependencies:
+      turbo: 1.2.14
+
+  actor:
+    specifiers:
+      interface: workspace:*
+    dependencies:
+      interface: link:../interface
+
+  interface:
+    specifiers: {}
+
+  provider:
+    specifiers:
+      interface: workspace:*
+    dependencies:
+      interface: link:../interface
 
 packages:
 

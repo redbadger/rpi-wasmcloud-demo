@@ -6,6 +6,9 @@
     "build": "cd .. && dagger do buildProvider",
     "clean": "rm -rf build"
   },
+  "dependencies": {
+    "interface": "workspace:*"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC"
