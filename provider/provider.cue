@@ -33,7 +33,7 @@ import (
 			docker.#Run & {
 				command: {
 					name: "cargo"
-					args: ["build"]
+					args: ["build", "--release"]
 				}
 				workdir: "/src/provider"
 			},
@@ -42,7 +42,7 @@ import (
 	contents: core.#Copy & {
 		input:    dagger.#Scratch
 		contents: _run.output.rootfs
-		source:   "/src/provider/target/debug/*"
+		source:   "/src/provider/target/release/*"
 		include: ["provider"]
 	}
 }

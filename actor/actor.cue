@@ -39,7 +39,7 @@ import (
 			docker.#Run & {
 				command: {
 					name: "cargo"
-					args: ["build"]
+					args: ["build", "--release"]
 				}
 				workdir: "/src/actor"
 			},
@@ -48,7 +48,7 @@ import (
 	contents: core.#Copy & {
 		input:    dagger.#Scratch
 		contents: _run.output.rootfs
-		source:   "/src/actor/target/wasm32-unknown-unknown/debug/*"
+		source:   "/src/actor/target/wasm32-unknown-unknown/release/*"
 		include: ["oled_actor.wasm"]
 	}
 }
