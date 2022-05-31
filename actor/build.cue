@@ -1,6 +1,7 @@
 package actor
 
 import (
+	"path"
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
 	"universe.dagger.io/docker"
@@ -9,17 +10,16 @@ import (
 // build with cargo
 #Build: {
 	// source code
-	sources: [path=string]: dagger.#FS
+	sources: [srcPath=string]: dagger.#FS
 
-	_buildCachePath: "/root/target"
-	_outdir:         "/root/actor/target/wasm32-unknown-unknown/release"
+	_workDir: "/root"
+	_outdir:  path.Join([_workDir, "actor/target/wasm32-unknown-unknown/release"], path.Unix)
 
 	_run: docker.#Build & {
 		steps: [
 			docker.#Pull & {
 				source: "rust:latest"
 			},
-
 			docker.#Run & {
 				command: {
 					name: "rustup"
@@ -32,27 +32,18 @@ import (
 					args: ["target", "add", "wasm32-unknown-unknown"]
 				}
 			},
-			for path, source in sources {
+			for srcPath, source in sources {
 				docker.#Copy & {
-					dest:     "/root/" + path
+					dest:     path.Join([_workDir, srcPath], path.Unix)
 					contents: source
 				}
 			},
 			docker.#Run & {
-				mounts: {
-					"build cache": {
-						dest:     _buildCachePath
-						type:     "cache"
-						contents: core.#CacheDir & {
-							id: "actor-build-cache"
-						}
-					}
-				}
 				command: {
 					name: "cargo"
 					args: ["build", "--release"]
 				}
-				workdir: "/root/actor"
+				workdir: path.Join([_workDir, "actor"], path.Unix)
 			},
 		]
 	}

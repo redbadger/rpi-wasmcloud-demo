@@ -11,6 +11,7 @@ import (
 #Build: {
 	// source code
 	sources: [srcPath=string]: dagger.#FS
+
 	_workDir: "/root"
 	_outdir:  path.Join([_workDir, "/provider/target/release"], path.Unix)
 
@@ -19,7 +20,6 @@ import (
 			docker.#Pull & {
 				source: "rust:latest"
 			},
-
 			docker.#Run & {
 				command: {
 					name: "rustup"
@@ -32,7 +32,6 @@ import (
 					contents: source
 				}
 			},
-
 			docker.#Run & {
 				command: {
 					name: "cargo"

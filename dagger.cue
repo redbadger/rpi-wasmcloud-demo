@@ -27,8 +27,12 @@ dagger.#Plan & {
 
 			_out: core.#Merge & {
 				inputs: [
-					actions.buildActor.contents.output,
-					actions.signActor.contents.output,
+					if (actions.buildActor.contents.output != _|_) {
+						actions.buildActor.contents.output
+					},
+					if (actions.buildSignedActor.contents.output != _|_) {
+						actions.buildSignedActor.contents.output
+					},
 				]
 			}
 			"./actor/build": write: contents: _out.output
@@ -50,7 +54,7 @@ dagger.#Plan & {
 				actor:     client.filesystem."./actor".read.contents
 			}
 		}
-		signActor: actor.#Sign & {
+		buildSignedActor: actor.#Sign & {
 			source: buildActor.output
 		}
 	}
