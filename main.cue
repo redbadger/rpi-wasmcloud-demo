@@ -2,7 +2,7 @@ package main
 
 import (
 	"dagger.io/dagger"
-
+	"dagger.io/dagger/core"
 	"dev@red-badger.com/rpi-wasmcloud-demo/provider"
 	"dev@red-badger.com/rpi-wasmcloud-demo/actor"
 )
@@ -22,23 +22,36 @@ dagger.#Plan & {
 				contents: dagger.#FS
 				exclude: ["target", "build", "node_modules", ".turbo"]
 			}
+
 			"./provider/build": write: contents: actions.buildProvider.contents.output
-			"./actor/build": write: contents:    actions.buildActor.contents.output
+
+			_out: core.#Merge & {
+				inputs: [
+					actions.buildActor.contents.output,
+					actions.signActor.contents.output,
+				]
+			}
+			"./actor/build": write: contents: _out.output
 		}
 		env: {}
 	}
 	actions: {
+		_interface_src: client.filesystem."./interface".read.contents
+
 		buildProvider: provider.#Build & {
 			sources: {
-				interface: client.filesystem."./interface".read.contents
+				interface: _interface_src
 				provider:  client.filesystem."./provider".read.contents
 			}
 		}
 		buildActor: actor.#Build & {
 			sources: {
-				interface: client.filesystem."./interface".read.contents
+				interface: _interface_src
 				actor:     client.filesystem."./actor".read.contents
 			}
+		}
+		signActor: actor.#Sign & {
+			source: buildActor.output
 		}
 	}
 }

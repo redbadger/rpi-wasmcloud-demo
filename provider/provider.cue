@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"path"
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
 	"universe.dagger.io/docker"
@@ -9,7 +10,9 @@ import (
 // build with cargo
 #Build: {
 	// source code
-	sources: [path=string]: dagger.#FS
+	sources: [srcPath=string]: dagger.#FS
+	_workDir: "/root"
+	_outdir:  path.Join([_workDir, "/provider/target/release"], path.Unix)
 
 	_run: docker.#Build & {
 		steps: [
@@ -23,9 +26,9 @@ import (
 					args: ["component", "add", "rustfmt"]
 				}
 			},
-			for path, source in sources {
+			for srcPath, source in sources {
 				docker.#Copy & {
-					dest:     "/src/" + path
+					dest:     path.Join([_workDir, srcPath], path.Unix)
 					contents: source
 				}
 			},
@@ -35,14 +38,18 @@ import (
 					name: "cargo"
 					args: ["build", "--release"]
 				}
-				workdir: "/src/provider"
+				workdir: path.Join([_workDir, "provider"], path.Unix)
 			},
 		]
 	}
+	output:  dagger.#FS & _subdir.output
+	_subdir: core.#Subdir & {
+		input: _run.output.rootfs
+		path:  _outdir
+	}
 	contents: core.#Copy & {
 		input:    dagger.#Scratch
-		contents: _run.output.rootfs
-		source:   "/src/provider/target/release/*"
-		include: ["provider"]
+		contents: output
+		include: ["oled-provider"]
 	}
 }
