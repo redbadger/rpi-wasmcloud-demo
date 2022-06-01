@@ -11,6 +11,7 @@ import (
 #Sign: {
 	source:   dagger.#FS
 	name:     "oled_actor"
+	artefact: _outFile
 	version:  string | *"0.1"
 	revision: string | *"0"
 	claims: [
@@ -19,8 +20,8 @@ import (
 		"wasmcloud:builtin:numbergen",
 		"wasmcloud:httpserver",
 	]
-	inFile:  string | *"\(name).wasm"
-	outFile: string | *"\(name)_s.wasm"
+	_inFile:  "\(name).wasm"
+	_outFile: "\(name)_s.wasm"
 
 	_workDir: "/root"
 
@@ -47,10 +48,10 @@ import (
 				"--name", name,
 				"--ver", version,
 				"--rev", revision,
-				"--destination", outFile,
+				"--destination", _outFile,
 			] + list.FlattenN([ for cap in claims {
 				["--cap", cap]
-			}], 1) + [inFile]
+			}], 1) + [_inFile]
 		}
 	}
 
@@ -59,10 +60,4 @@ import (
 		path:  _workDir
 	}
 	output: dagger.#FS & _subdir.output
-
-	contents: core.#Copy & {
-		input:    dagger.#Scratch
-		contents: output
-		include: [outFile]
-	}
 }

@@ -23,39 +23,45 @@ dagger.#Plan & {
 				exclude: ["target", "build", "node_modules", ".turbo"]
 			}
 
-			"./provider/build": write: contents: actions.buildProvider.contents.output
-
-			_out: core.#Merge & {
-				inputs: [
-					if (actions.buildActor.contents.output != _|_) {
-						actions.buildActor.contents.output
-					},
-					if (actions.buildSignedActor.contents.output != _|_) {
-						actions.buildSignedActor.contents.output
-					},
-				]
-			}
-			"./actor/build": write: contents: _out.output
+			"./build": write: contents: actions.build.output
 		}
 		env: {}
 	}
 	actions: {
 		_interface_src: client.filesystem."./interface".read.contents
 
-		buildProvider: provider.#Build & {
+		_buildProvider: provider.#Build & {
 			sources: {
 				interface: _interface_src
 				provider:  client.filesystem."./provider".read.contents
 			}
 		}
-		buildActor: actor.#Build & {
+		_provider: core.#Copy & {
+			input:    dagger.#Scratch
+			contents: _buildProvider.output
+			include: [_buildProvider.artefact]
+		}
+
+		_buildActor: actor.#Build & {
 			sources: {
 				interface: _interface_src
 				actor:     client.filesystem."./actor".read.contents
 			}
 		}
-		buildSignedActor: actor.#Sign & {
-			source: buildActor.output
+		_signActor: actor.#Sign & {
+			source: _buildActor.output
+		}
+		_actor: core.#Copy & {
+			input:    dagger.#Scratch
+			contents: _signActor.output
+			include: [_buildActor.artefact, _signActor.artefact]
+		}
+
+		build: core.#Merge & {
+			inputs: [
+				_provider.output,
+				_actor.output,
+			]
 		}
 	}
 }

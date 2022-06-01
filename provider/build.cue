@@ -14,6 +14,7 @@ import (
 
 	_workDir: "/root"
 	_outdir:  path.Join([_workDir, "/provider/target/release"], path.Unix)
+	artefact: "oled-provider"
 
 	_run: docker.#Build & {
 		steps: [
@@ -41,14 +42,10 @@ import (
 			},
 		]
 	}
-	output:  dagger.#FS & _subdir.output
+
 	_subdir: core.#Subdir & {
 		input: _run.output.rootfs
 		path:  _outdir
 	}
-	contents: core.#Copy & {
-		input:    dagger.#Scratch
-		contents: output
-		include: ["oled-provider"]
-	}
+	output: dagger.#FS & _subdir.output
 }

@@ -11,6 +11,8 @@ import (
 #Build: {
 	// source code
 	sources: [srcPath=string]: dagger.#FS
+	name:     "oled_actor"
+	artefact: "\(name).wasm"
 
 	_workDir: "/root"
 	_outdir:  path.Join([_workDir, "actor/target/wasm32-unknown-unknown/release"], path.Unix)
@@ -47,14 +49,10 @@ import (
 			},
 		]
 	}
-	output:  dagger.#FS & _subdir.output
+
 	_subdir: core.#Subdir & {
 		input: _run.output.rootfs
 		path:  _outdir
 	}
-	contents: core.#Copy & {
-		input:    dagger.#Scratch
-		contents: output
-		include: ["oled_actor.wasm"]
-	}
+	output: dagger.#FS & _subdir.output
 }

@@ -7,7 +7,9 @@
       "inputs": ["src/**", "rust/src/**", "Cargo.toml", "*.cue"],
       "outputs": ["build/**"]
     },
-    "clean": {},
+    "clean": {
+      "cache": false
+    },
     "test": {
       "dependsOn": ["^build"],
       "outputs": []
