@@ -12,15 +12,15 @@ dagger.#Plan & {
 		filesystem: {
 			"./interface": read: {
 				contents: dagger.#FS
-				exclude: ["rust/target", "build", "node_modules", ".turbo"]
+				exclude: ["rust/target"]
 			}
 			"./provider": read: {
 				contents: dagger.#FS
-				exclude: ["target", "build", "node_modules", ".turbo"]
+				exclude: ["target"]
 			}
 			"./actor": read: {
 				contents: dagger.#FS
-				exclude: ["target", "build", "node_modules", ".turbo"]
+				exclude: ["target"]
 			}
 
 			"./build": write: contents: actions.build.output
