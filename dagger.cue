@@ -23,7 +23,8 @@ dagger.#Plan & {
 				exclude: ["target"]
 			}
 
-			"./build": write: contents: actions.build.output
+			"./build/provider": write: contents: actions.buildProvider.output
+			"./build/actor": write: contents:    actions.buildActor.output
 		}
 		env: {}
 	}
@@ -36,7 +37,7 @@ dagger.#Plan & {
 				provider:  client.filesystem."./provider".read.contents
 			}
 		}
-		_provider: core.#Copy & {
+		buildProvider: core.#Copy & {
 			input:    dagger.#Scratch
 			contents: _buildProvider.output
 			include: [_buildProvider.artefact]
@@ -51,17 +52,10 @@ dagger.#Plan & {
 		_signActor: actor.#Sign & {
 			source: _buildActor.output
 		}
-		_actor: core.#Copy & {
+		buildActor: core.#Copy & {
 			input:    dagger.#Scratch
 			contents: _signActor.output
 			include: [_buildActor.artefact, _signActor.artefact]
-		}
-
-		build: core.#Merge & {
-			inputs: [
-				_provider.output,
-				_actor.output,
-			]
 		}
 	}
 }

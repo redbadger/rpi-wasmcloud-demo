@@ -54,5 +54,5 @@ import (
 		input: _run.output.rootfs
 		path:  _outdir
 	}
-	output: dagger.#FS & _subdir.output
+	output: _subdir.output
 }

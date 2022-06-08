@@ -59,5 +59,5 @@ import (
 		input: sign.output.rootfs
 		path:  _workDir
 	}
-	output: dagger.#FS & _subdir.output
+	output: _subdir.output
 }
